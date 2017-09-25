@@ -45,23 +45,7 @@ class ModeGraphicalPanel ( wx.Panel ):
         #=======================================================================
         
               
-                # Create an accelerator table
-        lid = wx.NewId()
-        cid = wx.NewId()
-        rid = wx.NewId()
-        self.Bind(wx.EVT_MENU, self.onCtrlC, id=cid)
-        self.Bind(wx.EVT_MENU, self.onLeft, id=lid)
-        self.Bind(wx.EVT_MENU, self.onRight, id=rid)
-        self.accel_tbl = wx.AcceleratorTable([ 
-                (wx.ACCEL_CTRL, ord('C'), cid), 
-                (wx.ACCEL_NORMAL, wx.WXK_LEFT, lid), 
-                (wx.ACCEL_NORMAL, wx.WXK_RIGHT, rid), 
-                ])
-        self.SetAcceleratorTable(self.accel_tbl)
-
-        # Handle events for mouse clicks
-        self.Bind(wx.EVT_LEFT_DOWN, self.onLeft)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.onRight)    
+  
             
         self.cfg = wx.Config('sensorsettings')
         num = enumerate(obd_sensors.SENSORS) 

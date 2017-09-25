@@ -37,25 +37,7 @@ class ModeListPanel(wx.Panel):
         self.list.InsertColumn(0, 'Name', width=140)
         self.list.InsertColumn(1, 'Value')
         self.list.InsertColumn(1, 'Units')
-                   
-         
-        self.cfg = wx.Config('sensorsettings')
-        num = self.list.GetItemCount()
-       
-        if self.cfg.Exists('Supported PIDs'):             
-            print ("confg load")
-            
-                
-            for i,e in enumerate(obd_sensors.SENSORS):
-                 
-                if self.cfg.ReadBool(e.name)==True:
-                    index = self.list.InsertStringItem(sys.maxint, e.name)
-                    self.list.SetStringItem(index, 1, 'fake val')
-                    self.list.SetStringItem(index, 2, e.unit)                  
-         
-        else:
-            print'empty list'
-        
+                         
   
         self.m_panel1.SetSizer( bSizer9 )
         self.m_panel1.Layout()
@@ -73,5 +55,76 @@ class ModeListPanel(wx.Panel):
         #call alerts
         #check eco mode
          
+        # Sensors 
+        self.istart = 0
+        self.sensors = []
+        
+        # Port 
+        self.port = None
 
+        # List to hold children widgets
+        self.boxes = []
+        self.texts = []
+    
+    def setConnection(self, connection):
+        self.connection = connection
+    
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
+
+    def getSensorsToDisplay(self, istart):
+        """
+        Get at most 6 sensors to be display on screen.
+        """
+        sensors_display = []
+        if istart<len(self.sensors):
+            iend = istart + 6
+            sensors_display = self.sensors[istart:iend]
+        return sensors_display
+
+    def ShowSensors(self):
+        """
+        Display the sensors.
+        """
+        
+        sensors = self.getSensorsToDisplay(self.istart)
+
+        self.cfg = wx.Config('sensorsettings')
+        num = self.list.GetItemCount()
+       
+        if self.cfg.Exists('Supported PIDs'):             
+                        
+            for i,e in enumerate(obd_sensors.SENSORS):
+                 
+                if self.cfg.ReadBool(e.name)==True:
+                    index = self.list.InsertStringItem(sys.maxint, e.name)
+                    self.list.SetStringItem(index, 1, 'fake val')
+                    self.list.SetStringItem(index, 2, e.unit)                  
+         
+        else:
+            print'empty list'
+
+        # Timer for update
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.refresh, self.timer)
+        self.timer.Start(2000)
+
+
+    def refresh(self, event):
+        sensors = self.getSensorsToDisplay(self.istart)   
+        
+        itext = 0
+        for index, sensor in sensors:
+
+            (name, value, unit) = self.port.sensor(index)
+            if type(value)==float:  
+                value = str("%.2f"%round(value, 3))                    
+
+            if itext<len(self.texts):
+                self.texts[itext*2].SetLabel(str(value))
+            
+            itext += 1 
     

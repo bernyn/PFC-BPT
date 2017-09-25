@@ -6,7 +6,6 @@
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
-import os
 import wx
 import wx.xrc
 import wx.animate
@@ -16,19 +15,11 @@ from settingsensor import SettitingSensorPanel
 from settinglarm import SettingAlarmsPanel
 from settingrecords import SettingRecordPanel
 from modegraphical import ModeGraphicalPanel
-from modenumerical import ModeNumericalPanel
 from records import RecordsPanel
 from DTCs import DTCsPanel
 from modelist import ModeListPanel
 
 from datetime import datetime
-import time
-
-from obd_capture import OBD_Capture
-from obd_sensors import SENSORS
-from obd_sensors import *
-from threading import Thread
-
 
 PANEL_MAIN = "00"
 
@@ -45,76 +36,8 @@ PANEL_MODE_NUMERICAL ="08"
 PANEL_MODE_LIST = "09"
 
 
-def obd_connect(o):
-    o.connect()
-
-class OBDConnection(object):
-    """
-    Class for OBD connection. Use a thread for connection.
-    """
-    
-    def __init__(self):
-        self.c = OBD_Capture()
-
-    def get_capture(self):
-        return self.c
-
-    def connect(self):
-        self.t = Thread(target=obd_connect, args=(self.c,))
-        self.t.start()
-
-    def is_connected(self):
-        return self.c.is_connected()
-
-    def get_output(self):
-        if self.c and self.c.is_connected():
-            return self.c.capture_data()
-        return ""
-
-    def get_port(self):
-        return self.c.is_connected()
-
-    def get_port_name(self):
-        if self.c:
-            port = self.c.is_connected()
-            if port:
-                try:
-                    return port.port.name
-                except:
-                    pass
-        return None
-    
-    def get_sensors(self):
-        sensors = []
-        if self.c:
-            sensors = self.c.getSupportedSensorList()
-        return sensors
-
-#-------------------------------------------------------------------------------
-
-#-------------------------------------------------------------------------------
-
-class OBDStaticBox(wx.StaticBox):
-    """
-    OBD StaticBox.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """
-        Constructor.
-        """
-        wx.StaticBox.__init__(self, *args, **kwargs)
-
-    def OnPaint(self, event): 
-        self.Paint(wx.PaintDC(self)) 
-
-    def Paint(self, dc): 
-        dc.DrawBitmap(self.bitmap, 0, 0)     
-
-#-------------------------------------------------------------------------------
-
 ###########################################################################
-## Class frameInit                    START
+## Class frameInit
 ###########################################################################
 
 class OBDText(wx.TextCtrl):
@@ -130,9 +53,9 @@ class OBDText(wx.TextCtrl):
         wx.TextCtrl.__init__(self, parent, style=style)
 
         #self.SetBackgroundColour('#21211f')
-        #self.SetForegroundColour(wx.WHITE)  
+       # self.SetForegroundColour(wx.WHITE)  
 
-        font = wx.Font(8, wx.ROMAN, wx.NORMAL, wx.NORMAL, faceName="Monaco")
+        font = wx.Font(12, wx.ROMAN, wx.NORMAL, wx.NORMAL, faceName="Monaco")
         self.SetFont(font)
 
     def AddText(self, text):
@@ -184,30 +107,17 @@ class OBDLoadingPanel(wx.Panel):
         # Background image
         self.SetBackgroundColour("black")
 
-        # Connection
-        self.c = None
-
-        # Sensors list
-        self.sensors = []
-
-        # Port
-        self.port = None
-
-    def getConnection(self):
-        return self.c
-        
         
     def showLoadingScreen(self):
         """
         Display the loading screen.
         """
-                
         boxSizer = wx.BoxSizer(wx.VERTICAL)
         gif_fname = u"./icons/loading 80.gif" 
-        self.gif = wx.animate.GIFAnimationCtrl(self, wx.ID_ANY, gif_fname)
+        self.gif = wx.animate.GIFAnimationCtrl(self, wx.ID_ANY, gif_fname, pos=(-1, -1))
         self.gif.GetPlayer().UseBackgroundColour(True)
         self.gif.Play()
-        boxSizer.Add(self.gif, 1,  wx.EXPAND |  wx.ALIGN_CENTER, 0)
+        boxSizer.Add(self.gif, 1, wx.ALIGN_CENTER_HORIZONTAL,  0)
         self.textCtrl = OBDText(self)
         boxSizer.Add(self.textCtrl, 1, wx.EXPAND | wx.ALL, 0)
         self.SetSizer(boxSizer)
@@ -219,65 +129,14 @@ class OBDLoadingPanel(wx.Panel):
         
         self.timer0 = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.connect, self.timer0)
-        self.timer0.Start(1000)
-        
-        self.Centre( wx.BOTH )
-        self.Show(True)
-        
-        
-        self.Layout() 
-    
+        self.timer0.Start(500)
+
     def connect(self, event):
         if self.timer0:
             self.timer0.Stop()
+        self.textCtrl.AddText(" doing things...\n")   
+        self.GetParent().update(None)
 
-        # Connection
-        self.c = OBDConnection()
-        self.c.connect()
-        connected = False
-        start_time = datetime.now()
-        print(start_time)
-        while not connected:
-            connected = self.c.is_connected()
-            #self.textCtrl.Clear()
-            #self.textCtrl.AddText(" Trying to connect ..." + time.asctime())
-            if connected: 
-                break
-                print('waiting')
-            time_delta = datetime.now() - start_time
-            print(time_delta)
-            if time_delta.seconds >= 3:
-                break
-
-        if not connected:
-            self.textCtrl.AddText(" Not connected\n")
-            return False
-        else:
-            #self.textCtrl.Clear()
-            #self.textCtrl.AddText(" Connected\n")
-            port_name = self.c.get_port_name()
-            if port_name:
-                self.textCtrl.AddText(" Failed Connection: " + port_name +"\n")
-                self.textCtrl.AddText(" Please hold alt & esc to view terminal.")
-            self.textCtrl.AddText(str(self.c.get_output()))
-            self.sensors = self.c.get_sensors()
-            self.port = self.c.get_port()
-
-            self.GetParent().update(None)
-
-
-    def getSensors(self):
-        return self.sensors
-    
-    def getPort(self):
-        return self.port
-
-    def onCtrlC(self, event):
-        self.GetParent().Close()
-
-
-
-#___________________________________________________________________________
    
 class PFCFrame(wx.Frame):
     """
@@ -414,7 +273,6 @@ class PFCFrame(wx.Frame):
         self.dtcpanel = DTCsPanel(self)
         self.recordspanel = RecordsPanel(self)
         self.modelistpanel = ModeListPanel(self)
-        self.modenumericalpanel = ModeNumericalPanel(self)
 
         self.cfg = wx.Config('DTCs Settings')
         if self.cfg.Exists('refresh'): #port baudrate databits parity stop bits
@@ -476,23 +334,14 @@ class PFCFrame(wx.Frame):
         
     def update(self,event):
         if self.panelLoading:
-            connection = self.panelLoading.getConnection()
-            sensors = self.panelLoading.getSensors()
-            port = self.panelLoading.getPort()
-            self.panelLoading.Destroy()
+            self.panelLoading.Destroy()   
             
-        self.modenumericalpanel = ModeNumericalPanel(self)
-        
-        if sensors:
-            self.modenumericalpanel.setSensors(sensors)
-            self.modenumericalpanel.setPort(port)        
-        
-        
+        self.modelistpanel = ModeListPanel(self)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.modelistpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
-        self.modenumericalpanel.showModeNumericalPanel()
-        self.modenumericalpanel.SetFocus()
+        self.modelistpanel.showModeListPanel()
+        self.modelistpanel.SetFocus()
         self.Layout()
     
     def OnSerial(self, etent):
@@ -549,15 +398,6 @@ class PFCFrame(wx.Frame):
         
     def OnNumerical (self, event):
         self.statusbar.SetStatusText('Numerical selected')
-        self.DestroyActivePanel() 
-        
-        self.modenumericalpanel = ModeNumericalPanel(self)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.modenumericalpanel, 1, wx.EXPAND)
-        self.SetSizer(self.sizer)
-        self.modenumericalpanel.showModeNumericalPanel()
-        self.modenumericalpanel.SetFocus()
-        self.Layout()
         
     def OnSensorList (self, event):
         self.statusbar.SetStatusText('Sensor list selected')
@@ -583,6 +423,8 @@ class PFCFrame(wx.Frame):
     def DestroyActivePanel(self):
         if self.panelLoading:
             self.panelLoading.Destroy()
+        #if self.panelmain:
+            #self.panelmain.Destroy()
         if  self.settingsesorpanel:
             self.settingsesorpanel.Destroy()         
         if self.settingrecordpanel:
@@ -593,6 +435,8 @@ class PFCFrame(wx.Frame):
             self.settingserialpanel.Destroy()     
         if self.recordspanel:
             self.recordspanel.Destroy() 
+        #if panelID == PANEL_RECORDS:
+            #print 'destroy record panel'
             autodtc=0
         if self.dtcpanel:
             self.dtcpanel.Destroy()
@@ -609,8 +453,8 @@ class PFCFrame(wx.Frame):
        
         if self.modegraphicalpanel:
             self.modegraphicalpanel.Destroy()   
-        if self.modenumericalpanel:
-            self.modenumericalpanel.Destroy()
+        #if panelID == PANEL_MODE_NUMERICAL :
+            #print 'destroy numerical panel'   
         if self.modelistpanel:
             self.modelistpanel.Destroy()      
              
@@ -661,7 +505,20 @@ class PFCApp(wx.App):
         frame.Show(True)
         #frame.showLoadingPanel()
 
+        # This frame is used only to set the full screen mode  
+        # for the splash screen display and for transition with 
+        # the loading screen.
+        # This frame is not shown and will be deleted later on.
+        #frame0 = OBDFrame0()
+        #self.SetTopWindow(frame0)
+        #frame0.ShowFullScreen(True)
+        #self.SetTopWindow(frame0)
 
+        # Splash screen
+        #splash = OBDSplashScreen(frame0, frame0)
+        #self.SetTopWindow(splash)
+        #splash.Show(True)
+        #splash.ShowFullScreen(True)
 
         return True
 
