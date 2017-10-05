@@ -69,6 +69,7 @@ class ModeNumericalPanel(wx.Panel):
         self.Layout()
         
         self.Centre( wx.BOTH )
+        self.ShowSensors()
 
 
     def setConnection(self, connection):

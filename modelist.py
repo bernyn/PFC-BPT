@@ -121,10 +121,12 @@ class ModeListPanel(wx.Panel):
 
             (name, value, unit) = self.port.sensor(index)
             if type(value)==float:  
-                value = str("%.2f"%round(value, 3))                    
-
+                value = str("%.2f"%round(value, 3)) 
+              
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
             
             itext += 1 
+            print (name+ '=' +value +' ' +unit)                    
+              
     

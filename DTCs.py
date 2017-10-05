@@ -9,6 +9,7 @@
 import wx
 import wx.xrc
 from datetime import datetime
+import obd_io
 
 
 GET_DTC_COMMAND   = "03"
@@ -100,6 +101,12 @@ class DTCsPanel( wx.Panel ):
         bSizer9.Fit( self.m_panel1 )
         bSizer2.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 0 )
         
+         # Connection
+        self.connection = None
+
+        # Port 
+        self.port = None
+        
         
         self.SetSizer( bSizer2 )
         self.Layout()
@@ -114,6 +121,14 @@ class DTCsPanel( wx.Panel ):
         self.clearDTCbutton.Bind( wx.EVT_BUTTON, self.OnClearDTC )
         #self.serialbackbutton.Bind( wx.EVT_BUTTON, self.OnSerialBack )
     
+    def setConnection(self, connection):
+        self.connection = connection
+    
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
         
     
     def __del__( self ):
@@ -129,6 +144,8 @@ class DTCsPanel( wx.Panel ):
 
     def OnReadDTC( self, event ):    
         self.dtcText.AppendText('GET_DTC_COMMAND   = "03"; ')
+        DTCCodes = []
+        get_dtc()
 
 
     

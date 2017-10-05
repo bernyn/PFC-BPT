@@ -322,7 +322,7 @@ class PFCFrame(wx.Frame):
         self.menuSettings.AppendItem( self.menuSerial )
         
         self.menuEcoMode = wx.MenuItem( self.menuSettings, wx.ID_ANY, u"Enable Eco Mode", wx.EmptyString, wx.ITEM_CHECK )
-        self.menuEcoMode.SetBitmap( wx.Bitmap( u"./icons/Heart-green-icon.png", wx.BITMAP_TYPE_ANY ) )
+        #self.menuEcoMode.SetBitmap( wx.Bitmap( u"./icons/Heart-green-icon.png", wx.BITMAP_TYPE_ANY ) )
         self.menuSettings.AppendItem( self.menuEcoMode )       
         
         self.menuFile.AppendSubMenu( self.menuSettings, u"Settings" )
