@@ -231,6 +231,7 @@ class OBDPort:
      # get sensor value from command
     def get_sensor_value(self,sensor):
          """Internal use only: not a public interface"""
+         print 'geting sensor value'
          cmd = sensor.cmd
          self.send_command(cmd)
          data = self.get_result()
@@ -248,12 +249,14 @@ class OBDPort:
     def sensor(self , sensor_index):
          """Returns 3-tuple of given sensors. 3-tuple consists of
          (Sensor Name (string), Sensor Value (string), Sensor Unit (string) ) """
+         print 'i,m in def sensor' 
          sensor = obd_sensors.SENSORS[sensor_index]
          r = self.get_sensor_value(sensor)
          return (sensor.name,r, sensor.unit)
 
     def sensor_names(self):
          """Internal use only: not a public interface"""
+         print 'geting sensor names'
          names = []
          for s in obd_sensors.SENSORS:
              names.append(s.name)
@@ -274,7 +277,7 @@ class OBDPort:
             
          for i in range(2,len(statusRes)): #Tests
               statusTrans.append(statusText[statusRes[i]]) 
-         
+         print('status trans = '+ statusTrans)  
          return statusTrans
           
      #

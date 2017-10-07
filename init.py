@@ -105,11 +105,7 @@ class OBDStaticBox(wx.StaticBox):
         """
         wx.StaticBox.__init__(self, *args, **kwargs)
 
-    def OnPaint(self, event): 
-        self.Paint(wx.PaintDC(self)) 
-
-    def Paint(self, dc): 
-        dc.DrawBitmap(self.bitmap, 0, 0)     
+   
 
 #-------------------------------------------------------------------------------
 
@@ -246,7 +242,7 @@ class OBDLoadingPanel(wx.Panel):
                 print('waiting')
             time_delta = datetime.now() - start_time
             print(time_delta)
-            if time_delta.seconds >= 3:
+            if time_delta.seconds >= 1:
                 break
 
         if not connected:

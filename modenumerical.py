@@ -16,17 +16,7 @@ class ModeNumericalPanel(wx.Panel):
 
     def showModeNumericalPanel(self):           
         
-        bSizer2 = wx.BoxSizer( wx.VERTICAL )
-        
-        self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        bSizer9 = wx.BoxSizer( wx.VERTICAL )
-        
-        self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Sensor Numerical Mode", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText2.Wrap( -1 )
-        self.m_staticText2.SetFont( wx.Font( 9, 74, 90, 92, False, "Calibri" ) )
-        
-        bSizer9.Add( self.m_staticText2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 1 )
-               
+        #self.value = 2.88
         
         # Create an accelerator table
         lid = wx.NewId()
@@ -59,17 +49,6 @@ class ModeNumericalPanel(wx.Panel):
         # List to hold children widgets
         self.boxes = []
         self.texts = []
-        
-        self.m_panel1.SetSizer( bSizer9 )
-        self.m_panel1.Layout()
-        bSizer9.Fit( self.m_panel1 )
-        bSizer2.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 0 )
-        
-        self.SetSizer( bSizer2 )
-        self.Layout()
-        
-        self.Centre( wx.BOTH )
-        self.ShowSensors()
 
 
     def setConnection(self, connection):
@@ -83,20 +62,19 @@ class ModeNumericalPanel(wx.Panel):
 
     def getSensorsToDisplay(self, istart):
         """
-        Get at most 6 sensors to be display on screen.
+        Get at most 1 sensor to be displayed on screen.
         """
         sensors_display = []
         if istart<len(self.sensors):
-            iend = istart + 6
+            iend = istart + 1
             sensors_display = self.sensors[istart:iend]
-        print sensors_display
         return sensors_display
 
     def ShowSensors(self):
         """
         Display the sensors.
         """
-        
+        print 'showsensors'
         sensors = self.getSensorsToDisplay(self.istart)
 
         # Destroy previous widgets
@@ -105,81 +83,92 @@ class ModeNumericalPanel(wx.Panel):
         self.boxes = []
         self.texts = []
 
-        # Main sizer
-        boxSizerMain = wx.BoxSizer(wx.VERTICAL)
-
-        # Grid sizer
-        nrows, ncols = 2, 3
-        vgap, hgap = 50, 50
-        gridSizer = wx.GridSizer(nrows, ncols, vgap, hgap)
+        boxSizer = wx.BoxSizer( wx.VERTICAL )
+        
+        self.panelbox = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        staticBox = wx.StaticBoxSizer( wx.StaticBox( self.panelbox, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+        
+        
+        
 
         # Create a box for each sensor
         for index, sensor in sensors:
-            
+            print 'creating boxes'
             (name, value, unit) = self.port.sensor(index)
 
-            box = OBDStaticBox(self, wx.ID_ANY)
+            box = wx.StaticBox( self, -1, "Special Text Ctrl" )
             self.boxes.append(box)
-            boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+            self.boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
 
+            
             # Text for sensor value 
             if type(value)==float:  
-                value = str("%.2f"%round(value, 3))   
-                                
-            t1 = wx.StaticText(parent=self, label=str(value), style=wx.ALIGN_CENTER)
-            t1.SetForegroundColour('WHITE')
-            font1 = wx.Font(32, wx.ROMAN, wx.NORMAL, wx.NORMAL, faceName="Monaco")
-            t1.SetFont(font1)
-            boxSizer.Add(t1, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-            boxSizer.AddStretchSpacer()
-            self.texts.append(t1)
-
-            # Text for sensor name
-            t2 = wx.StaticText(parent=self, label=unit+"\n"+name, style=wx.ALIGN_CENTER)
-            t2.SetForegroundColour('WHITE')
-            font2 = wx.Font(8, wx.ROMAN, wx.NORMAL, wx.BOLD, faceName="Monaco")
-            t2.SetFont(font2)
-            boxSizer.Add(t2, 0, wx.ALIGN_CENTER | wx.ALL, 5)
-            self.texts.append(t2)
-            gridSizer.Add(boxSizer, 1, wx.EXPAND | wx.ALL)
+                value = str("%.2f"%round(value, 3))                    
+            self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.sensorData.Wrap( -1 )
+            self.sensorData.SetFont( wx.Font( 18, 74, 90, 90, False, "Arial" ) )
             
-            print value
-            print t2  
+            staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
+            self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.sensorName.Wrap( -1 )
+            staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
 
         # Add invisible boxes if necessary
-        nsensors = len(sensors)
-        for i in range(6-nsensors):
-            box = OBDStaticBox(self)
-            boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
-            self.boxes.append(box)
-            box.Show(False)
-            gridSizer.Add(boxSizer, 1, wx.EXPAND | wx.ALL)
+#===============================================================================
+#         nsensors = len(sensors)
+#         
+#         for i in range(1-nsensors):
+#             print 'invisible box'
+#             box = wx.StaticBox( self, -1, "Text" )
+#             self.boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+#             self.boxes.append(box)
+# 
+#             self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
+#             self.sensorData.Wrap( -1 )
+#             self.sensorData.SetFont( wx.Font( 18, 74, 90, 90, False, "Arial" ) )
+#             
+#             staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+#             
+#             self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
+#             self.sensorName.Wrap( -1 )
+#             staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+#===============================================================================
+        
+        
+        self.panelbox.SetSizer( staticBox )
+        self.panelbox.Layout()
+        staticBox.Fit( self.panelbox )
+        boxSizer.Add( self.panelbox, 1, wx.EXPAND |wx.ALL, 5 )
+        
+        
+        self.SetSizer( boxSizer )
+        self.Layout()
+        
+        self.Centre( wx.BOTH )      
            
-        # Layout
-        boxSizerMain.Add(gridSizer, 1, wx.EXPAND | wx.ALL, 10)
-        self.SetSizer(boxSizerMain)
-        self.Refresh()
-        self.Layout() 
-
+       
+ 
         # Timer for update
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.refresh, self.timer)
-        self.timer.Start(2000)
+        self.timer.Start(1000)
 
 
     def refresh(self, event):
         sensors = self.getSensorsToDisplay(self.istart)   
-        
+        #self.value = self.value +10
         itext = 0
         for index, sensor in sensors:
-
+            print 'refresh sensor'
             (name, value, unit) = self.port.sensor(index)
             if type(value)==float:  
                 value = str("%.2f"%round(value, 3))                    
 
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
-            print ('Name= ' + name + ', Value= '+ value) 
+            
             itext += 1
 
 
@@ -188,30 +177,33 @@ class ModeNumericalPanel(wx.Panel):
 
     def onLeft(self, event):
         """
-        Get data from 6 previous sensors in the list.
+        Get data from 1 previous sensor in the list.
         """
-        istart = self.istart-6 
-        if istart<0: istart = 0
-        self.istart = istart
-        self.ShowSensors()
-
-    def onRight(self, event):
-        """
-        Get data from 6 next sensors in the list.
-        """
-        istart = self.istart+6
+        print 'onleft'
+        #self.value = self.value -1
+        istart = self.istart + 1
         if istart<len(self.sensors):
             self.istart = istart
             self.ShowSensors()
-
-
-class OBDStaticBox(wx.StaticBox):
-    """
-    OBD StaticBox.
-    """
-
-    def __init__(self, *args, **kwargs):
+        else: 
+            istart = self.istart - 31 
+            self.istart = istart 
+            self.ShowSensors() 
+                
+    def onRight(self, event):
         """
-        Constructor.
+        Get data from 1 next sensor in the list.
         """
-        wx.StaticBox.__init__(self, *args, **kwargs)
+        #self.value = self.value +1
+        print 'onright'
+        istart = self.istart + 1
+        if istart<len(self.sensors):
+            self.istart = istart
+            self.ShowSensors()
+        else: 
+            istart = self.istart - 31 
+            self.istart = istart 
+            self.ShowSensors()
+
+   
+
