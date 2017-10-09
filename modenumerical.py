@@ -6,7 +6,10 @@ import wx
 import sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 import obd_sensors
-
+from obd_capture import OBD_Capture
+from obd_sensors import SENSORS
+from obd_sensors import *
+from threading import Thread
  
      
 class ModeNumericalPanel(wx.Panel):
