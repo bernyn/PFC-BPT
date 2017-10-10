@@ -6,9 +6,11 @@
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
+from datetime import datetime
+
 import wx
 import wx.xrc
-from datetime import datetime
+
 import obd_io
 
 

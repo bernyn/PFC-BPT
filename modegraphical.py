@@ -6,18 +6,18 @@
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
+from math import pi, sqrt
+
 import wx
+
+import obd_sensors
 import wx.grid as gridlib
 import wx.lib.agw.speedmeter as SM
-from math import pi, sqrt
-import obd_sensors
-
 
 
 ###########################################################################
 ## Class frameGraphical
 ###########################################################################
-
 class ModeGraphicalPanel ( wx.Panel ):
     
         

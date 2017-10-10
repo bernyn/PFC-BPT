@@ -26,15 +26,16 @@
 #
 ###########################################################################
 
-import serial
+from datetime import datetime
+from math import ceil
 import string
 import time
-from math import ceil
-from datetime import datetime
 
-import obd_sensors
+import serial
 
 from obd_sensors import hex_to_int
+import obd_sensors
+
 
 GET_DTC_COMMAND   = "03"
 CLEAR_DTC_COMMAND = "04"

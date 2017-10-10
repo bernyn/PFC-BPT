@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
-import obd_io
-import serial
-import platform
-import obd_sensors
 from datetime import datetime
+import platform
 import time
 
+import serial
+
+import obd_io
+import obd_sensors
 from obd_utils import scanSerial
+
 
 class OBD_Capture():
     def __init__(self):

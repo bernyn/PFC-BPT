@@ -1,5 +1,7 @@
-import serial
 import platform
+
+import serial
+
 
 def scanSerial():
     """scan for available ports. return a list of serial names"""

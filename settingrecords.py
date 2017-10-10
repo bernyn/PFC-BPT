@@ -1,13 +1,14 @@
 #SELECTOR MULTIPLE
-from pylab import plotfile, show, gca
-import matplotlib.cbook as cbook
-
-import wx
 import sys
+
+from pylab import plotfile, show, gca
+import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+import matplotlib.cbook as cbook
 import obd_sensors
 
- 
+
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT | wx.SUNKEN_BORDER)

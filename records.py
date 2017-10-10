@@ -1,18 +1,21 @@
 
 #SELECTOR MULTIPLE
-from pylab import plotfile, show, gca
-import matplotlib.cbook as cbook
-import matplotlib.pyplot as plt
-import os
-import wx
-import sys
-import pandas as pd
-import numpy as np
-from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
-import obd_sensors
 from _codecs import decode
 from encodings import ascii
+import os
+import sys
+
 from pandas.io.pytables import IndexCol
+from pylab import plotfile, show, gca
+import wx
+from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+import matplotlib.cbook as cbook
+import matplotlib.pyplot as plt
+import numpy as np
+import obd_sensors
+import pandas as pd
+
 
 wildcard = "log source (*.txt; *.csv; *.log)|*.txt;*.csv;*.log;|" \
          "All files (*.*)|*.*"

@@ -8,7 +8,8 @@
 ###########################################################################
 import wx
 import wx.xrc
-             
+
+
 class SettingSerialPanel( wx.Panel ):
     
     def __init__(self, *args, **kwargs):

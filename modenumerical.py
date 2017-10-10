@@ -1,17 +1,17 @@
 #SELECTOR MULTIPLE
-from pylab import plotfile, show, gca
-import matplotlib.cbook as cbook
-
-import wx
 import sys
-from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
-import obd_sensors
-from obd_capture import OBD_Capture
-from obd_sensors import SENSORS
-from obd_sensors import *
 from threading import Thread
- 
-     
+
+from pylab import plotfile, show, gca
+import wx
+from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+import matplotlib.cbook as cbook
+from obd_capture import OBD_Capture
+from obd_sensors import *
+from obd_sensors import SENSORS
+
+
 class ModeNumericalPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         #config values
@@ -20,7 +20,9 @@ class ModeNumericalPanel(wx.Panel):
     def showModeNumericalPanel(self):           
         
         #self.value = 2.88
-        
+        # Connection
+        self.c = OBD_Capture()
+                
         # Create an accelerator table
         lid = wx.NewId()
         cid = wx.NewId()
@@ -44,10 +46,13 @@ class ModeNumericalPanel(wx.Panel):
 
         # Sensors 
         self.istart = 0
-        self.sensors = []
+        self.sensors = self.c.getSupportedSensorList()
+        print 'c.getsupported sensor'
+        print self.sensors
+        
         
         # Port 
-        self.port = None
+        self.port = self.c.is_connected()
 
         # List to hold children widgets
         self.boxes = []
@@ -71,6 +76,8 @@ class ModeNumericalPanel(wx.Panel):
         if istart<len(self.sensors):
             iend = istart + 1
             sensors_display = self.sensors[istart:iend]
+        print 'in sensors sensors_display'
+        print sensors_display
         return sensors_display
 
     def ShowSensors(self):
@@ -79,6 +86,7 @@ class ModeNumericalPanel(wx.Panel):
         """
         print 'showsensors'
         sensors = self.getSensorsToDisplay(self.istart)
+        print sensors
 
         # Destroy previous widgets
         for b in self.boxes: b.Destroy()

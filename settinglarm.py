@@ -9,12 +9,13 @@
 
 import wx
 import wx.xrc
+
 import obd_sensors
+
 
 ###########################################################################
 ## Class frameSettingAlarmScroll
 ###########################################################################
-
 class SettingAlarmsPanel ( wx.Panel ):
     
         

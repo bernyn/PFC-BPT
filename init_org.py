@@ -6,20 +6,22 @@
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
+from datetime import datetime
+
 import wx
-import wx.xrc
 import wx.animate
+import wx.xrc
+
+from DTCs import DTCsPanel
+from modegraphical import ModeGraphicalPanel
+from modelist import ModeListPanel
 import obd_sensors
-from settingserial import SettingSerialPanel
-from settingsensor import SettitingSensorPanel
+from records import RecordsPanel
 from settinglarm import SettingAlarmsPanel
 from settingrecords import SettingRecordPanel
-from modegraphical import ModeGraphicalPanel
-from records import RecordsPanel
-from DTCs import DTCsPanel
-from modelist import ModeListPanel
+from settingsensor import SettitingSensorPanel
+from settingserial import SettingSerialPanel
 
-from datetime import datetime
 
 PANEL_MAIN = "00"
 
