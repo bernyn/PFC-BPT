@@ -1,3 +1,4 @@
+#SELECTOR MULTIPLE
 import sys
 from threading import Thread
 
@@ -15,6 +16,9 @@ class ModeNumericalPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         #config values
         super(ModeNumericalPanel, self).__init__(*args, **kwargs)
+
+    def showModeNumericalPanel(self):           
+        
         #self.value = 2.88
         # Connection
         self.c = OBD_Capture()
@@ -42,39 +46,27 @@ class ModeNumericalPanel(wx.Panel):
 
         # Sensors 
         self.istart = 0
-        self.sensors = []
+        self.sensors = self.c.getSupportedSensorList()
+        print 'c.getsupported sensor'
+        print self.sensors
+        
         
         # Port 
-        self.port = None
+        self.port = self.c.is_connected()
 
         # List to hold children widgets
         self.boxes = []
         self.texts = []
-   
-    
-    def showModeNumericalPanel(self):           
-        print 'shownumerical' 
+
 
     def setConnection(self, connection):
-        print 'set connection='
-        print connection
         self.connection = connection
     
     def setSensors(self, sensors):
-        print 'set sensor='
         self.sensors = sensors
-        print sensors
         
     def setPort(self, port):
-        print 'set port'
         self.port = port
-        print port
-    
-    def getSensors(self):
-        return self.sensors 
-        
-    def getPort(self):
-        return self.port    
 
     def getSensorsToDisplay(self, istart):
         """
@@ -84,13 +76,15 @@ class ModeNumericalPanel(wx.Panel):
         if istart<len(self.sensors):
             iend = istart + 1
             sensors_display = self.sensors[istart:iend]
-
+        print 'in sensors sensors_display'
+        print sensors_display
         return sensors_display
 
     def ShowSensors(self):
         """
         Display the sensors.
         """
+        print 'showsensors'
         sensors = self.getSensorsToDisplay(self.istart)
         print sensors
 
@@ -131,7 +125,29 @@ class ModeNumericalPanel(wx.Panel):
             self.sensorName.Wrap( -1 )
             staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
             
-                    
+
+        # Add invisible boxes if necessary
+#===============================================================================
+#         nsensors = len(sensors)
+#         
+#         for i in range(1-nsensors):
+#             print 'invisible box'
+#             box = wx.StaticBox( self, -1, "Text" )
+#             self.boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+#             self.boxes.append(box)
+# 
+#             self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
+#             self.sensorData.Wrap( -1 )
+#             self.sensorData.SetFont( wx.Font( 18, 74, 90, 90, False, "Arial" ) )
+#             
+#             staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+#             
+#             self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
+#             self.sensorName.Wrap( -1 )
+#             staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+#===============================================================================
+        
+        
         self.panelbox.SetSizer( staticBox )
         self.panelbox.Layout()
         staticBox.Fit( self.panelbox )
@@ -199,3 +215,6 @@ class ModeNumericalPanel(wx.Panel):
             istart = self.istart - 31 
             self.istart = istart 
             self.ShowSensors()
+
+   
+
