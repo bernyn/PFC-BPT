@@ -8,7 +8,10 @@
 ###########################################################################
 import wx
 import wx.xrc
+import serial
+import obd_io 
 
+SERIALTIMEOUT = 3
 
 class SettingSerialPanel( wx.Panel ):
     
@@ -25,7 +28,8 @@ class SettingSerialPanel( wx.Panel ):
             parity, stopbits = self.cfg.ReadInt('parity'), self.cfg.ReadInt('stopbits')
  
         else:
-            (port, baudrate, databits, parity, stopbits) = (0, 0, 3, 0, 0)
+             portnames = self.scanSerial()
+             (baudrate, databits, parity, stopbits) = (0, 3, 0, 0)
         
         bSizer2 = wx.BoxSizer( wx.VERTICAL )
         
@@ -46,8 +50,8 @@ class SettingSerialPanel( wx.Panel ):
         
         gSizer1.Add( self.m_staticText3, 0, wx.ALL, 5 )
         
-        comPortConfChoices = [ u"COM1", u"COM2", u"COM3", u"COM4", u"COM5", u"COM6", u"COM7", u"COM8", u"COM9", u"COM10" ]
-        self.comPortConf = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, comPortConfChoices, 0 )
+        #comPortConfChoices = [portnames]
+        self.comPortConf = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, portnames, 0 )
         self.comPortConf.SetSelection( port )
         self.comPortConf.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         
@@ -87,7 +91,7 @@ class SettingSerialPanel( wx.Panel ):
         
         gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
         
-        parityConfChoices = [ u"none", u"even", u"odd", u"mark", u"space", wx.EmptyString ]
+        parityConfChoices = [ u"none", u"even", u"odd", u"mark", u"space"]
         self.parityConf = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, parityConfChoices, 0 )
         self.parityConf.SetSelection( parity )
         self.parityConf.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
@@ -120,12 +124,7 @@ class SettingSerialPanel( wx.Panel ):
         
         self.serialdefaultbutton = wx.Button( self.m_panel1, wx.ID_ANY, u"Default", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
         bSizer7.Add( self.serialdefaultbutton, 0,  wx.EXPAND,5 )
-        
-        #=======================================================================
-        # self.serialbackbutton = wx.Button( self.m_panel1, wx.ID_ANY, u"Back", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-        # bSizer7.Add( self.serialbackbutton, 0,  wx.EXPAND, 5 )
-        #=======================================================================
-        
+              
         
         bSizer9.Add( bSizer7, 1, wx.EXPAND, 0 )
         
@@ -146,8 +145,7 @@ class SettingSerialPanel( wx.Panel ):
         self.serialsavebutton.Bind( wx.EVT_BUTTON, self.OnSerialSave )
         self.serialtestbutton.Bind( wx.EVT_BUTTON, self.OnSerialTest )
         self.serialdefaultbutton.Bind( wx.EVT_BUTTON, self.OnSerialDefault )
-        #self.serialbackbutton.Bind( wx.EVT_BUTTON, self.OnSerialBack )
-    
+            
         
     
     def __del__( self ):
@@ -170,7 +168,28 @@ class SettingSerialPanel( wx.Panel ):
         self.statusBar.SetStatusText('Configuration saved, %s ' % wx.Now())
     
     def OnSerialTest( self, event ):
-        event.Skip()
+        portconf= self.comPortConf.GetSelection() 
+        baudconf = self.baudRateConf.GetSelection()
+        databitsconf = self.dataBitsConf.GetSelection()    
+        parityconf= self.parityConf.GetSelection()     
+        stopbitsconf= self.stopBitsConf.GetSelection()
+
+        try:
+             self.port = serial.Serial(portconf,baudconf, parityconf, stopbitsconf, databitsconf, SERIALTIMEOUT)
+            
+        except serial.SerialException as e:
+             print e
+             self.State = 0
+             dialog = wx.MessageDialog(self, "Unable to connect to " +self.port.port.name )
+             dialog.ShowModal()  # show it
+             dialog.Destroy()  
+             return None
+         
+        if self.port:
+           dialog = wx.MessageDialog(self, "Connected to " +self.port.port.name )
+           dialog.ShowModal()  # show it
+           dialog.Destroy() 
+            
     
     def OnSerialDefault( self, event ):
         self.comPortConf.SetSelection(0) 
@@ -179,10 +198,15 @@ class SettingSerialPanel( wx.Panel ):
         self.parityConf.SetSelection(0)     
         self.stopBitsConf.SetSelection(0)
         
-        
-    
-    #===========================================================================
-    # def OnSerialBack( self, event ):
-    #     event.Skip()
-    #===========================================================================
+    def scanSerial(self, event):
+        ports = []
+        for i in range(10):
+          try:
+            s = serial.Serial("/dev/rfcomm"+str(i))
+            ports.append( (str(s.port)))
+            s.close()   
+          except serial.SerialException:
+            pass
+           
+        return ports
 

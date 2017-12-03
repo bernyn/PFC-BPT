@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-from datetime import datetime
-import platform
-import time
-
-import serial
-
 import obd_io
+import serial
+import platform
 import obd_sensors
-from obd_utils import scanSerial
+from datetime import datetime
+import time
+import os
+
 
 
 class OBD_Capture():
@@ -16,9 +15,18 @@ class OBD_Capture():
         self.supportedSensorList = []
         self.port = None
         localtime = time.localtime(time.time())
+        self.path= os.path.dirname(__file__)
+        self.record_path = os.path.join(self.path, 'recrods/')
+        self.filedate = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')       
+        self.record_file = "records-" +self.filedate +".csv"
+        f = open(self.record_file, 'w')
+        f.close()
+
+        if not os.path.isdir(self.record_path):
+            os.makedirs(self.record_path)
 
     def connect(self):
-        portnames = scanSerial()
+        portnames = self.scanSerial()
         print portnames
         for port in portnames:
             self.port = obd_io.OBDPort(port, None, 2, 2)
@@ -36,18 +44,23 @@ class OBD_Capture():
         
     def getSupportedSensorList(self):
         return self.supportedSensorList 
+    
+    def getUnSupportedSensorList(self):
+        return self.unsupportedSensorList
+    
+    def getrecordfile(self):
+        return self.record_file
 
-    def capture_data(self):
-
-        text = ""
-        #Find supported sensors - by getting PIDs from OBD
-        # its a string of binary 01010101010101 
-        # 1 means the sensor is supported
+    
+    def record(self):
+        print "recording"
+        line=""
+        supported_sensor_list= self.get_supported_sensor_list()
         self.supp = self.port.sensor(0)[1]
         self.supportedSensorList = []
         self.unsupportedSensorList = []
-
-        # loop through PIDs binary
+        filerecord= self.getrecordfile()
+        
         for i in range(0, len(self.supp)):
             if self.supp[i] == "1":
                 # store index of sensor and sensor object
@@ -56,25 +69,53 @@ class OBD_Capture():
                 self.unsupportedSensorList.append([i+1, obd_sensors.SENSORS[i+1]])
         
         for supportedSensor in self.supportedSensorList:
-            text += "supported sensor index = " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname) + "\n"
+            line += "date= " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname) + "\n"
         
         time.sleep(3)
-        
+               
         if(self.port is None):
             return None
-
-        #Loop until Ctrl C is pressed        
-        localtime = datetime.now()
-        current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.microsecond)
-        #log_string = current_time + "\n"
-        text = current_time + "\n"
-        results = {}
-        for supportedSensor in self.supportedSensorList:
+              
+         
+        line = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')+ ";"  +"index" + ";"+ "name"+ "\n"
+      
+        for supportedSensor in supported_sensor_list:
             sensorIndex = supportedSensor[0]
             (name, value, unit) = self.port.sensor(sensorIndex)
-            text += name + " = " + str(value) + " " + str(unit) + "\n"
+            line += name + ";" + str(value) + ";" + str(unit) + "\n"
+        self.write_record(filerecord, line)
+        return line
 
-        return text
+            
+    
+    def write_record(self,file_record,line):   
+        f = open(file_record, 'w')
+        f.write(line) #Give your csv text here.
+        f.close()
+    
+    def capture_dtc(self):
+        self.DTCCodes=[]
+        self.DTCCodes = self.port.get_dtc()
+        print self.DTCCodes
+        return self.DTCCodes
+        
+    def clear_dtc(self):
+        self.result=self.port.clear_dtc()
+        print self.result
+        return self.result
+       
+    def setPort(self, port):
+        self.port = port 
+        
+    def scanSerial(self):
+        available = []
+        for i in range(10):
+          try:
+            s = serial.Serial("/dev/rfcomm"+str(i))
+            available.append( (str(s.port)))
+            s.close()   # explicit close 'cause of delayed GC in java
+          except serial.SerialException:
+            pass
 
 if __name__ == "__main__":
 

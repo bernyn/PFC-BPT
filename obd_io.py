@@ -131,13 +131,13 @@ class OBDPort:
         print ("ate0 (Line feed off) response:" + self.get_result()) 
         self.send_command("ats0")  # spaces off
         #debug_display(self._notify_window, 2, "ate0 (Spaces off) response:" + self.get_result())
-        print  ("ats0 (Spaces off) response:" + self.get_result())
+        print  ("ate0 (Spaces off) response:" + self.get_result())
          #self.send_command("ath0")  # headers off
          #debug_display(self._notify_window, 2, "ate0 (Headers off) response:" + self.get_result())      
         self.send_command("ATSP5") #select auto protocol
          
         #debug_display(self._notify_window, 2, "atsp0 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
-        print ("atsp5 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
+        print ("atsp0 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
         self.send_command("0100")
         ready = self.get_result()
          
@@ -232,7 +232,7 @@ class OBDPort:
      # get sensor value from command
     def get_sensor_value(self,sensor):
          """Internal use only: not a public interface"""
-         print 'geting sensor value'
+#         print 'geting sensor value'
          cmd = sensor.cmd
          self.send_command(cmd)
          data = self.get_result()
@@ -241,6 +241,7 @@ class OBDPort:
              data = self.interpret_result(data)
              if data != "NODATA":
                  data = sensor.value(data)
+
          else:
              return "NORESPONSE"
              
@@ -250,10 +251,13 @@ class OBDPort:
     def sensor(self , sensor_index):
          """Returns 3-tuple of given sensors. 3-tuple consists of
          (Sensor Name (string), Sensor Value (string), Sensor Unit (string) ) """
-         print 'i,m in def sensor' 
+##         print 'i,m in def sensor' 
          sensor = obd_sensors.SENSORS[sensor_index]
          r = self.get_sensor_value(sensor)
-         return (sensor.name,r, sensor.unit)
+##         print str(r)
+##	 print str(sensor.name)
+##	 print str(sensor.unit)
+	 return (sensor.name,r, sensor.unit)
 
     def sensor_names(self):
          """Internal use only: not a public interface"""

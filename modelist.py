@@ -4,15 +4,32 @@ import sys
 from pylab import plotfile, show, gca
 import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
-
+from modenumerical import PopupUP
 import matplotlib.cbook as cbook
 import obd_sensors
 
 
+
+ 
+     
 class ModeListPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         #config values
         super(ModeListPanel, self).__init__(*args, **kwargs)
+        
+         # Connection
+        self.connection = None
+
+        # Sensors 
+        self.istart = 0
+        self.sensors = []
+        
+        # Port 
+        self.port = None
+        
+        self.rpm = 0
+        self.speed = 0
+        self.ecomode = False
 
     def showModeListPanel(self):           
         
@@ -27,7 +44,8 @@ class ModeListPanel(wx.Panel):
         
         bSizer9.Add( self.m_staticText2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 1 )
                
-        
+        print 'show passed port'
+        print self.port
         #=======================================================================
         # panelList = wx.Panel( self, -1 )
         # leftPanel = wx.Panel(panelSettings, -1)
@@ -54,18 +72,10 @@ class ModeListPanel(wx.Panel):
         
         #call alerts
         #check eco mode
-         
-        # Sensors 
-        self.istart = 0
-        self.sensors = []
-        
-        # Port 
-        self.port = None
-
-        # List to hold children widgets
-        self.boxes = []
-        self.texts = []
     
+    def setEcoMode (self,eco):
+        return self.ecomode 
+         
     def setConnection(self, connection):
         self.connection = connection
     
@@ -74,6 +84,12 @@ class ModeListPanel(wx.Panel):
         
     def setPort(self, port):
         self.port = port
+    
+    def getSensors(self):
+        return self.sensors
+    
+    def getPort(self):
+        return self.port
 
     def getSensorsToDisplay(self, istart):
         """
@@ -97,11 +113,11 @@ class ModeListPanel(wx.Panel):
        
         if self.cfg.Exists('Supported PIDs'):             
                         
-            for i,e in enumerate(obd_sensors.SENSORS):
+            for i,e in enumerate(self.sensors):
                  
                 if self.cfg.ReadBool(e.name)==True:
                     index = self.list.InsertStringItem(sys.maxint, e.name)
-                    self.list.SetStringItem(index, 1, 'fake val')
+                    self.list.SetStringItem(index, 1, e.value)
                     self.list.SetStringItem(index, 2, e.unit)                  
          
         else:
@@ -128,5 +144,26 @@ class ModeListPanel(wx.Panel):
             
             itext += 1 
             print (name+ '=' +value +' ' +unit)                    
-              
+ 
+                
+    def update(self, event):
+        if self.panelLoading:
+            connection = self.panelLoading.getConnection()
+            sensors = self.panelLoading.getSensors()
+            port = self.panelLoading.getPort()
+            self.panelLoading.Destroy()
+        
+        if connection:
+            self.panelGauges.setConnection(connection)
+
+        if sensors:
+            self.panelGauges.setSensors(sensors)
+            self.panelGauges.setPort(port)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.panelGauges, 1, wx.EXPAND)
+        self.SetSizer(self.sizer)
+        self.panelGauges.ShowSensors()
+        self.panelGauges.SetFocus()
+        self.Layout()
+             
     

@@ -45,7 +45,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         self.cfg2 = wx.Config('sensorsettings')
         self.Choices=[]
         if self.cfg2.Exists('Supported PIDs'):                         
-            for i, e in enumerate(obd_sensors.SENSORS):             
+            for i, e in enumerate(self.sensor):             
                 if self.cfg2.ReadBool(e.name)==True:
                     self.Choices.append(e.name)
                     
@@ -75,11 +75,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.SetFlexibleDirection( wx.BOTH )
         fgSizer1.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
         
-        #=======================================================================
-        # self.a1t = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Alarm value 1", wx.DefaultPosition, wx.DefaultSize, 0 )
-        # self.a1t.Wrap( -1 )
-        # self.a1t.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
-        #=======================================================================
+
         self.a1t = wx.ComboBox( self.m_scrolledWindow1, wx.ID_ANY, u"Alarm1", wx.DefaultPosition, wx.Size( 100,-1 ),  self.Choices, 0 )
         self.a1t.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         posta1=self.a1t.FindString(alarm1t)
@@ -234,11 +230,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         self.alarmdefaultbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Default", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
         bSizer7.Add( self.alarmdefaultbutton, 0, wx.ALL, 5 )
         
-        #=======================================================================
-        # self.alarmbackbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Back", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
-        # bSizer7.Add( self.alarmbackbutton, 0, wx.ALL, 5 )
-        #=======================================================================
-        
+               
         
         bSizer10.Add( bSizer7, 1, wx.EXPAND, 5 )
         
@@ -258,7 +250,6 @@ class SettingAlarmsPanel ( wx.Panel ):
         self.alarmsavebutton.Bind( wx.EVT_BUTTON, self.OnAlarmSave )
         self.alarmallbutton.Bind( wx.EVT_BUTTON, self.OnDisableAlarmss )
         self.alarmdefaultbutton.Bind( wx.EVT_BUTTON, self.OnAlarmDefault )
-        #self.alarmbackbutton.Bind( wx.EVT_BUTTON, self.OnAlarmBack )
     
     def __del__( self ):
         pass
@@ -378,5 +369,15 @@ class SettingAlarmsPanel ( wx.Panel ):
         self.a5aM.SetValue(False)  
         self.a5SM.SetValue(0)
         
-    
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
+        
+    def getSensors(self):
+        return self.sensors
+        
+    def getPort(self):
+        return self.port               
     

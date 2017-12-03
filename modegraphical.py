@@ -7,6 +7,7 @@
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
 from math import pi, sqrt
+from modenumerical import PopupUP
 
 import wx
 
@@ -24,54 +25,69 @@ class ModeGraphicalPanel ( wx.Panel ):
     def __init__(self, *args, **kwargs):
         #config values
         super(ModeGraphicalPanel, self).__init__(*args, **kwargs)
+         # Connection
+        self.connection = None
 
-    def showGraphicalPanel(self):            
-        #=======================================================================
-        # num = self.list.GetItemCount() 
-        # self.cfg = wx.Config('sensorsettings')
-        # num = self.list.GetItemCount()
-        # sensorlist = []
-        # for i in range(num):
-        #     sensorlist.append(False)
-        # if self.cfg.Exists('Supported PIDs'):             
-        #    # print ("confg load")
-        #     for i in range(num):
-        #         self.list.CheckItem(i,self.cfg.ReadBool(self.list.GetItemText(i)))  
-        #         #print('Sensor ' + self.list.GetItemText(i) + ' value'+ str(self.cfg.ReadBool('Sensorlist'+str(i))))                        
-        # else:
-        #     for i in range(num):
-        #         self.list.CheckItem(i,False)
-        #         #print('Sensor ' + self.list.GetItemText(i) + ' value'+ str(self.cfg.ReadBool('Sensorlist'+str(i)))) 
-        #=======================================================================
+        # Sensors 
+        self.istart = 0
+        self.sensors = []
         
-              
-  
-            
+        # Port 
+        self.port = None
+        
+        self.rpm = 0
+        self.speed = 0
+        self.ecomode = False
+        
         self.cfg = wx.Config('sensorsettings')
         num = enumerate(obd_sensors.SENSORS) 
         sensorlist = []
         
         if self.cfg.Exists('Supported PIDs'):             
-            #===================================================================
-            # i= 4  Calculated Load Value value= True
-            # i= 5  Coolant Temperature value= True
-            # i= 1  Engine RPM value= True
-            # i= 13 Vehicle Speed value= True
-            # i= 15 Intake Air Temp value= True
-            # i= 16 Air Flow Rate (MAF) value= True
-            #===================================================================
-            displayKmh = self.cfg.ReadBool('           Vehicle Speed')
-            displayRPM = self.cfg.ReadBool('              Engine RPM')
-            displayCoolant = self.cfg.ReadBool('     Coolant Temperature')
-            displayIntake = self.cfg.ReadBool('         Intake Air Temp')
-            displayLoad = self.cfg.ReadBool('   Calculated Load Value')
-            displayMAF = self.cfg.ReadBool('     Air Flow Rate (MAF)')
+            self.displayKmh = self.cfg.ReadBool('           Vehicle Speed')
+            self.displayRPM = self.cfg.ReadBool('              Engine RPM')
+            self.displayCoolant = self.cfg.ReadBool('     Coolant Temp')
+            self.displayIntake = self.cfg.ReadBool('         Intake Air Temp')
+            self.displayLoad = self.cfg.ReadBool('   Calculated Load Value')
+            self.displayMAF = self.cfg.ReadBool('     Air Flow Rate (MAF)')
                     
            
                                              
         else:
-            for i in range(num):
+            for i in enumerate(num):
                 print "no config"
+        
+    def setEcoMode (self,eco):
+        return self.ecomode
+    
+    def setConnection(self, connection):
+        self.connection = connection
+    
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
+    
+    def getSensors(self):
+        return self.sensors
+    
+    def getPort(self):
+        return self.port
+    
+    def getSensorsToDisplay(self, istart):
+        """
+        Get at most 1 sensor to be displayed on screen.
+        """
+        sensors_display = []
+        if istart<len(self.sensors):
+            iend = istart + 1
+            sensors_display = self.sensors[istart:iend]
+        return sensors_display
+    
+    def showGraphicalPanel(self):            
+                 
+
                 #===============================================================
                 # self.list.CheckItem(i,False)
                 #===============================================================
@@ -87,25 +103,134 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.m_staticText2.SetFont( wx.Font( 9, 74, 90, 92, False, "Calibri" ) )
         
         bSizer9.Add( self.m_staticText2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 1 )
-        
-       
+              
         panelGraphical = wx.Panel( self, -1 )
         sizerGraphical = wx.FlexGridSizer( 2, 3, 0, 0 )       
         
-        panelkmh = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)              #1 kmh
-        panelrpm = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)              #2 RPM
-        panelairtemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)          #3 airtemp
-        panelblocktemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)        #4 BlockTemp
-        panelintaketemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)       #5 intaketemp
-        paneloiltemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)          #6 oiltemp
+        if self.displayKmh: 
+            print 'kmj'
+            self.panelkmh = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)              #1 kmh
+            self.addDisplayKmh(self, self.panelkmh)
         
+        if self.displayRPM:
+            print 'rpm'
+            self.panelrpm = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)              #2 RPM
+            self.addDisplayRPM(self, self.panelrpm)
+        
+        if self.displayCoolant:
+            print 'coolant'
+            self.panelcoolanttemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)          #3 coolanttemp
+            self.addDisplayCoolant(self, self.panelcoolanttemp)
+        
+        if self.displayLoad:
+            print 'load'
+            self.panelload = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)        #4 load
+            self.addDisplayLoad(self, self.panelload)
+        
+        if self.displayIntake:
+            print 'intake'
+            self.panelintaketemp = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)       #5 intaketemp
+            self.addDisplayIntake(self, self.panelintaketemp)
+        
+        if self.displayMAF: 
+            print 'maf'
+            self.panelmaf = wx.Panel(panelGraphical, -1, style=wx.RAISED_BORDER)          #6 Maf
+            self.addDisplayMAF(self, self.panelmaf)
+                    
+
+        if self.displayKmh: 
+            bsizerkmh = wx.BoxSizer(wx.VERTICAL)
+            hsizerkmh = wx.BoxSizer(wx.HORIZONTAL)   
+            bsizerkmh.Add(self.GageKmh, 1, wx.EXPAND) 
+            stattextkmh = wx.StaticText(self.panelkmh, -1, "Km/h", style=wx.ALIGN_CENTER)     
+            stattextkmh.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizerkmh.Add(stattextkmh, 1, wx.EXPAND)
+            bsizerkmh.Add(hsizerkmh, 0, wx.EXPAND)
+            self.panelkmh.SetSizer(bsizerkmh)
+        
+        if self.displayRPM:
+            bsizerrpm = wx.BoxSizer(wx.VERTICAL)
+            hsizerrpm = wx.BoxSizer(wx.HORIZONTAL)
+            bsizerrpm.Add(self.GageRPM, 1, wx.EXPAND) 
+            stattextrpm = wx.StaticText(self.panelrpm, -1, "RPM x 100", style=wx.ALIGN_CENTER)
+            stattextrpm.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizerrpm.Add(stattextrpm, 1, wx.EXPAND)       
+            bsizerrpm.Add(hsizerrpm, 0, wx.EXPAND)       
+            self.panelrpm.SetSizer(bsizerrpm)
+            
+        
+        if self.displayCoolant:
+            bsizercoolanttemp = wx.BoxSizer(wx.VERTICAL)        
+            hsizercoolanttemp = wx.BoxSizer(wx.HORIZONTAL)                
+            bsizercoolanttemp.Add(self.GageCoolantTemp, 1, wx.EXPAND)
+            stattextcoolanttemp = wx.StaticText(self.panelcoolanttemp, -1, "Coolant Temp", style=wx.ALIGN_CENTER)
+            stattextcoolanttemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizercoolanttemp.Add(stattextcoolanttemp, 1, wx.EXPAND)
+            bsizercoolanttemp.Add(hsizercoolanttemp, 0, wx.EXPAND)
+            self.panelcoolanttemp.SetSizer(bsizercoolanttemp)
+                 
+        
+        if self.displayLoad:
+            bsizerload = wx.BoxSizer(wx.VERTICAL)
+            hsizerload = wx.BoxSizer(wx.HORIZONTAL)                      
+            bsizerload.Add(self.GageLoad, 1, wx.EXPAND)
+            stattextload = wx.StaticText(self.panelload, -1, "Load", style=wx.ALIGN_CENTER)
+            stattextload.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizerload.Add(stattextload, 1, wx.EXPAND)
+            bsizerload.Add(hsizerload, 0, wx.EXPAND)
+            self.panelload.SetSizer(bsizerload)
+        
+        if self.displayIntake:
+            bsizerintaketemp = wx.BoxSizer(wx.VERTICAL)
+            hsizerintaketemp = wx.BoxSizer(wx.HORIZONTAL)                    
+            bsizerintaketemp.Add(self.GageIntakeTemp, 1, wx.EXPAND)
+            stattextintaketemp= wx.StaticText(self.panelintaketemp, -1, "Intake Temp", style=wx.ALIGN_CENTER)
+            stattextintaketemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizerintaketemp.Add(stattextintaketemp, 1, wx.EXPAND)
+            bsizerintaketemp.Add(hsizerintaketemp, 0, wx.EXPAND)
+            self.panelintaketemp.SetSizer(bsizerintaketemp)        
+        
+        if self.displayMAF:                   
+            bsizermaf = wx.BoxSizer(wx.VERTICAL)
+            hsizermaf = wx.BoxSizer(wx.HORIZONTAL)
+            bsizermaf.Add(self.GageMAF, 1, wx.EXPAND)
+            stattextmaf = wx.StaticText(self.panelmaf, -1, "MAF", style=wx.ALIGN_CENTER)
+            stattextmaf.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
+            hsizermaf.Add(stattextmaf, 1, wx.EXPAND)
+            bsizermaf.Add(hsizermaf, 0, wx.EXPAND)
+            self.panelmaf.SetSizer(bsizermaf)
+        
+        
+        if self.displayKmh: sizerGraphical.Add(self.panelkmh,  1, wx.EXPAND)
+        if self.displayRPM: sizerGraphical.Add(self.panelrpm,  1, wx.EXPAND)
+        if self.displayLoad: sizerGraphical.Add(self.panelairtemp,  1, wx.EXPAND) 
+        if self.displayCoolant: sizerGraphical.Add(self.panelblocktemp, 1, wx.EXPAND) 
+        if self.displayIntake: sizerGraphical.Add(self.panelintaketemp, 1, wx.EXPAND)  
+        if self.displayMAF: sizerGraphical.Add(self.paneloiltemp,  1, wx.EXPAND) 
+
+        sizerGraphical.AddGrowableRow(0)
+        sizerGraphical.AddGrowableRow(1)
+        
+        sizerGraphical.AddGrowableCol(0)
+        sizerGraphical.AddGrowableCol(1)
+        sizerGraphical.AddGrowableCol(2)
+        
+        panelGraphical.SetSizer(sizerGraphical)
+
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        mainSizer.Add(panelGraphical, 1, wx.EXPAND)
+        self.SetSizer(mainSizer)
+        mainSizer.Layout()
+
+         # Handle events for mouse clicks
+        self.Bind(wx.EVT_LEFT_DOWN, self.onLeft)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.onRight)
+    
+    def  addDisplayKmh(self, event,panelkmh):  
         # Panel 1 Km/h SpeedMeter        
         self.GageKmh = SM.SpeedMeter(panelkmh,
                                           agwStyle=SM.SM_DRAW_HAND |
-                                          #SM.SM_DRAW_SECTORS |
                                           SM.SM_DRAW_SECONDARY_TICKS |
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
-                                          #SM.SM_DRAW_PARTIAL_FILLER |
                                           SM.SM_ROTATE_TEXT
                                 
                                           )
@@ -124,21 +249,14 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.GageKmh.SetSpeedBackground(wx.BLACK)        
         self.GageKmh.SetHandColour(wx.WHITE)
         self.GageKmh.DrawExternalArc(False)
-        #=======================================================================
-        # self.GageKmh.SetMiddleText("Km/h")
-        # self.GageKmh.SetMiddleTextColour(wx.WHITE)
-        # self.GageKmh.SetMiddleTextFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )
-        #=======================================================================
         self.GageKmh.SetSpeedValue(5.6)
-      
-       
+    
+    def  addDisplayRPM(self, event,panelrpm):
         # Panel 2 RPM
-       
         self.GageRPM = SM.SpeedMeter(panelrpm,
                                           agwStyle=SM.SM_DRAW_HAND |
                                           SM.SM_DRAW_SECTORS |
                                           SM.SM_DRAW_SECONDARY_TICKS |
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
                                           SM.SM_DRAW_PARTIAL_FILLER |
                                           SM.SM_ROTATE_TEXT
                                 
@@ -161,84 +279,64 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.GageRPM.SetSpeedBackground(wx.BLACK)        
         self.GageRPM.SetHandColour(wx.WHITE)
         self.GageRPM.DrawExternalArc(False)
-        #=======================================================================
-        # self.GageRPM.SetMiddleText("RPM x 100")
-        # self.GageRPM.SetMiddleTextColour(wx.WHITE)
-        # self.GageRPM.SetMiddleTextFont( wx.Font( 86, 74, 90, 90, False, "Calibri" ) )
-        #=======================================================================
         self.GageRPM.SetSpeedValue(5.6)
-       
-      
-        # Panel 3 Air Temp
-        
-        self.GageAirTemp = SM.SpeedMeter(panelairtemp,
+    
+    
+    def  addDisplayCoolant(self, event,panelcoolanttemp): 
+        # Panel 3 Coolant Temp
+        self.GageCoolantTemp = SM.SpeedMeter(panelcoolanttemp,
                                           agwStyle=SM.SM_DRAW_HAND |
                                           SM.SM_DRAW_SECTORS |
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
                                           SM.SM_DRAW_MIDDLE_ICON,
                                           mousestyle=SM.SM_MOUSE_TRACK
                                           )
-        self.GageAirTemp.SetAngleRange(-pi/6, 7*pi/6)
+        self.GageCoolantTemp.SetAngleRange(-pi/6, 7*pi/6)
         intervals = range(-5, 46, 5)
-        self.GageAirTemp.SetIntervals(intervals)
+        self.GageCoolantTemp.SetIntervals(intervals)
         colours = [wx.BLUE]*2
         colours.extend([wx.BLACK]*7)
         colours.append(wx.RED)
-        self.GageAirTemp.SetIntervalColours(colours)
+        self.GageCoolantTemp.SetIntervalColours(colours)
         ticks = [str(interval) + "c" for interval in intervals]
-        self.GageAirTemp.SetTicks(ticks)
-        self.GageAirTemp.SetTicksColour(wx.WHITE)
-        self.GageAirTemp.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )      
-        self.GageAirTemp.SetHandColour(wx.WHITE)
-        self.GageAirTemp.SetSpeedBackground(wx.BLACK)        
-        #=======================================================================
-        # self.GageAirTemp.SetMiddleText("AIR c")
-        # self.GageAirTemp.SetMiddleTextColour(wx.WHITE)
-        # self.GageAirTemp.SetMiddleTextFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )
-        #=======================================================================
-        self.GageAirTemp.DrawExternalArc(False)
-        self.GageAirTemp.SetHandColour(wx.WHITE)
-        self.GageAirTemp.SetShadowColour(wx.Colour(50, 50, 50))               
-        self.GageAirTemp.SetSpeedValue(40)
-      
-        # Pabek 4 Block Temp     
-        self.GageBlockTemp = SM.SpeedMeter(panelblocktemp,
+        self.GageCoolantTemp.SetTicks(ticks)
+        self.GageCoolantTemp.SetTicksColour(wx.WHITE)
+        self.GageCoolantTemp.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )      
+        self.GageCoolantTemp.SetHandColour(wx.WHITE)
+        self.GageCoolantTemp.SetSpeedBackground(wx.BLACK)        
+        self.GageCoolantTemp.DrawExternalArc(False)
+        self.GageCoolantTemp.SetHandColour(wx.WHITE)
+        self.GageCoolantTemp.SetShadowColour(wx.Colour(50, 50, 50))               
+        self.GageCoolantTemp.SetSpeedValue(40)
+    
+    def  addDisplayLoad(self, event,panelload):
+        # Pabek 4 LOAD     
+        self.GageLoad = SM.SpeedMeter(panelload,
                                           agwStyle=SM.SM_DRAW_HAND |
                                           SM.SM_DRAW_SECTORS,
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
-                                          #SM.SM_DRAW_MIDDLE_ICON,
                                           mousestyle=SM.SM_MOUSE_TRACK
-                                          )
-
-        
-        self.GageBlockTemp.SetAngleRange(-pi/6, 7*pi/6)
-        intervals = range(20, 121, 10)
-        self.GageBlockTemp.SetIntervals(intervals)
+                                          )       
+        self.GageLoad.SetAngleRange(-pi/6, 7*pi/6)
+        intervals = range(20, 100, 10)
+        self.GageLoad.SetIntervals(intervals)
         colours = [wx.BLUE]*2
         colours.extend([wx.BLACK]*7)
         colours.append(wx.RED)
-        self.GageBlockTemp.SetIntervalColours(colours)
+        self.GageLoad.SetIntervalColours(colours)
         ticks = [str(interval) + "c" for interval in intervals]
-        self.GageBlockTemp.SetTicks(ticks)
-        self.GageBlockTemp.SetTicksColour(wx.WHITE)
-        self.GageBlockTemp.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" )  )       
-        self.GageBlockTemp.SetHandColour(wx.WHITE)
-        self.GageBlockTemp.SetSpeedBackground(wx.BLACK)        
-        #=======================================================================
-        # self.GageBlockTemp.SetMiddleText("BLOCK c")
-        # self.GageBlockTemp.SetMiddleTextColour(wx.WHITE)
-        # self.GageBlockTemp.SetMiddleTextFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD))
-        #=======================================================================
-        self.GageBlockTemp.DrawExternalArc(False)
-        self.GageBlockTemp.SetHandColour(wx.WHITE)               
-        self.GageBlockTemp.SetSpeedValue(40)
-                       
+        self.GageLoad.SetTicks(ticks)
+        self.GageLoad.SetTicksColour(wx.WHITE)
+        self.GageLoad.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" )  )       
+        self.GageLoad.SetHandColour(wx.WHITE)
+        self.GageLoad.SetSpeedBackground(wx.BLACK)        
+        self.GageLoad.DrawExternalArc(False)
+        self.GageLoad.SetHandColour(wx.WHITE)               
+        self.GageLoad.SetSpeedValue(40)
+    
+    def  addDisplayIntake(self, event,panelintaketemp):
         # Panel 5 Intake Temp
         self.GageIntakeTemp = SM.SpeedMeter(panelintaketemp,
                                           agwStyle=SM.SM_DRAW_HAND |
                                           SM.SM_DRAW_SECTORS ,
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
-                                          #SM.SM_DRAW_MIDDLE_ICON,
                                           mousestyle=SM.SM_MOUSE_TRACK
                                           )
 
@@ -254,227 +352,116 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.GageIntakeTemp.SetTicks(ticks)
         self.GageIntakeTemp.SetTicksColour(wx.WHITE)
         self.GageIntakeTemp.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )
-        #=======================================================================
-        # self.GageIntakeTemp.SetMiddleText("INTAKE c ")
-        # self.GageIntakeTemp.SetMiddleTextColour(wx.WHITE)
-        # self.GageIntakeTemp.SetMiddleTextFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD))
-        # self.GageIntakeTemp.SetHandColour(wx.WHITE)
-        #=======================================================================
-        #Set The Background Color Of The GageIntaketemp OutSide The Control
         self.GageIntakeTemp.SetSpeedBackground(wx.BLACK)
         self.GageIntakeTemp.DrawExternalArc(False)
         self.GageIntakeTemp.SetHandColour(wx.WHITE)    
         # Quite An High Fever!!!        
-        self.GageIntakeTemp.SetSpeedValue(80)
-
-
-        # Panel 6 Oil Temp
-        
-        self.GageOilTemp = SM.SpeedMeter(paneloiltemp,
+        self.GageIntakeTemp.SetSpeedValue(80)  
+    
+    def  addDisplayMAF(self, event,panelmaf):
+                # Panel 6 MAF
+        self.GageMAF = SM.SpeedMeter(panelmaf,
                                           agwStyle=SM.SM_DRAW_HAND |
                                           SM.SM_DRAW_SECTORS,
-                                          #SM.SM_DRAW_MIDDLE_TEXT |
-                                          #SM.SM_DRAW_MIDDLE_ICON,
                                           mousestyle=SM.SM_MOUSE_TRACK
                                           )
 
-        self.GageOilTemp.SetAngleRange(-pi/6, 7*pi/6)
+        self.GageMAF.SetAngleRange(-pi/6, 7*pi/6)
 
-        intervals = range(20, 121, 10)
-        self.GageOilTemp.SetIntervals(intervals)
+        intervals = range(20, 101, 10)
+        self.GageMAF.SetIntervals(intervals)
         colours = [wx.BLUE]*2
         colours.extend([wx.BLACK]*7)
         colours.append(wx.RED)
-        self.GageOilTemp.SetIntervalColours(colours)
+        self.GageMAF.SetIntervalColours(colours)
         ticks = [str(interval) + "c" for interval in intervals]
-        self.GageOilTemp.SetTicks(ticks)
-        self.GageOilTemp.SetTicksColour(wx.WHITE)
-        self.GageOilTemp.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )       
-        self.GageOilTemp.SetHandColour(wx.WHITE)
-        self.GageOilTemp.SetSpeedBackground(wx.BLACK)
-        self.GageOilTemp.SetArcColour(wx.BLUE)
-        self.GageOilTemp.DrawExternalArc(False)
-        self.GageOilTemp.SetHandColour(wx.WHITE)
-        #=======================================================================
-        # self.GageOilTemp.SetMiddleText("OIL C")
-        # self.GageOilTemp.SetMiddleTextColour(wx.WHITE)
-        # self.GageOilTemp.SetMiddleTextFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD))
-        #=======================================================================
-         
-        self.GageOilTemp.SetSpeedValue(40)
-
-        # End Of SpeedMeter Controls Construction. Add Some Functionality
-        self.isalive = 0
-
-
-
-        # These Are Cosmetics For SpeedMeter Controls
-        bsizerkmh = wx.BoxSizer(wx.VERTICAL)
-        hsizerkmh = wx.BoxSizer(wx.HORIZONTAL)   
-        bsizerkmh.Add(self.GageKmh, 1, wx.EXPAND) 
-        stattextkmh = wx.StaticText(panelkmh, -1, "Km/h", style=wx.ALIGN_CENTER)     
-        stattextkmh.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizerkmh.Add(stattextkmh, 1, wx.EXPAND)
-        bsizerkmh.Add(hsizerkmh, 0, wx.EXPAND)
-        panelkmh.SetSizer(bsizerkmh)
-       
-       
-        bsizerrpm = wx.BoxSizer(wx.VERTICAL)
-        hsizerrpm = wx.BoxSizer(wx.HORIZONTAL)
-        bsizerrpm.Add(self.GageRPM, 1, wx.EXPAND) 
-        stattextrpm = wx.StaticText(panelrpm, -1, "RPM x 100", style=wx.ALIGN_CENTER)
-        stattextrpm.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizerrpm.Add(stattextrpm, 1, wx.EXPAND)       
-        bsizerrpm.Add(hsizerrpm, 0, wx.EXPAND)       
-        panelrpm.SetSizer(bsizerrpm)
-        
-        bsizerairtemp = wx.BoxSizer(wx.VERTICAL)        
-        hsizerairtemp = wx.BoxSizer(wx.HORIZONTAL)                
-        bsizerairtemp.Add(self.GageAirTemp, 1, wx.EXPAND)
-        stattextairtemp = wx.StaticText(panelairtemp, -1, "Air Temp", style=wx.ALIGN_CENTER)
-        stattextairtemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizerairtemp.Add(stattextairtemp, 1, wx.EXPAND)
-        bsizerairtemp.Add(hsizerairtemp, 0, wx.EXPAND)
-        panelairtemp.SetSizer(bsizerairtemp)
-        
-        bsizerblocktemp = wx.BoxSizer(wx.VERTICAL)
-        hsizerblocktemp = wx.BoxSizer(wx.HORIZONTAL)                      
-        bsizerblocktemp.Add(self.GageBlockTemp, 1, wx.EXPAND)
-        stattextblocktemp = wx.StaticText(panelblocktemp, -1, "Block Temp", style=wx.ALIGN_CENTER)
-        stattextblocktemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizerblocktemp.Add(stattextblocktemp, 1, wx.EXPAND)
-        bsizerblocktemp.Add(hsizerblocktemp, 0, wx.EXPAND)
-        panelblocktemp.SetSizer(bsizerblocktemp)
-        
-        bsizerintaketemp = wx.BoxSizer(wx.VERTICAL)
-        hsizerintaketemp = wx.BoxSizer(wx.HORIZONTAL)                    
-        bsizerintaketemp.Add(self.GageIntakeTemp, 1, wx.EXPAND)
-        stattextintaketemp= wx.StaticText(panelintaketemp, -1, "Intake Temp", style=wx.ALIGN_CENTER)
-        stattextintaketemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizerintaketemp.Add(stattextintaketemp, 1, wx.EXPAND)
-        bsizerintaketemp.Add(hsizerintaketemp, 0, wx.EXPAND)
-        panelintaketemp.SetSizer(bsizerintaketemp)
-        
-        bsizeroiltemp = wx.BoxSizer(wx.VERTICAL)
-        hsizeroiltemp = wx.BoxSizer(wx.HORIZONTAL)
-        bsizeroiltemp.Add(self.GageOilTemp, 1, wx.EXPAND)
-        stattextoiltemp = wx.StaticText(paneloiltemp, -1, "Oil Temp", style=wx.ALIGN_CENTER)
-        stattextoiltemp.SetFont(wx.Font( 5, 74, 90, 90, False, "Calibri" )) 
-        hsizeroiltemp.Add(stattextoiltemp, 1, wx.EXPAND)
-        bsizeroiltemp.Add(hsizeroiltemp, 0, wx.EXPAND)
-        paneloiltemp.SetSizer(bsizeroiltemp)
-        
-        
-        #=======================================================================
-        # bsizerkmh.Layout()
-        # bsizerrpm.Layout()
-        # bsizerairtemp.Layout()
-        # bsizerblocktemp.Layout()
-        # bsizerintaketemp.Layout()
-        # bsizeroiltemp.Layout()
-        #=======================================================================
-        
-        #=======================================================================
-        # displayKmh = self.cfg.ReadBool('           Vehicle Speed')
-        # displayRPM = self.cfg.ReadBool('              Engine RPM')
-        # displayCoolantTemp = self.cfg.ReadBool('     Coolant Temperature')
-        # displayIntake = self.cfg.ReadBool('         Intake Air Temp')
-        # displayLoad = self.cfg.ReadBool('   Calculated Load Value')
-        # displayMAF = self.cfg.ReadBool('     Air Flow Rate (MAF)')
-        #=======================================================================
-        if displayKmh: sizerGraphical.Add(panelkmh,  1, wx.EXPAND)
-        if displayRPM: sizerGraphical.Add(panelrpm,  1, wx.EXPAND)
-        if displayLoad: sizerGraphical.Add(panelairtemp,  1, wx.EXPAND) #invent
-        if displayCoolant: sizerGraphical.Add(panelblocktemp, 1, wx.EXPAND) #invent
-        if displayIntake: sizerGraphical.Add(panelintaketemp, 1, wx.EXPAND)  
-        if displayMAF: sizerGraphical.Add(paneloiltemp,  1, wx.EXPAND) #invent
-
-        sizerGraphical.AddGrowableRow(0)
-        sizerGraphical.AddGrowableRow(1)
-        
-        sizerGraphical.AddGrowableCol(0)
-        sizerGraphical.AddGrowableCol(1)
-        sizerGraphical.AddGrowableCol(2)
-        
-        panelGraphical.SetSizer(sizerGraphical)
-
-        mainSizer = wx.BoxSizer(wx.VERTICAL)
-        mainSizer.Add(panelGraphical, 1, wx.EXPAND)
-        self.SetSizer(mainSizer)
-        mainSizer.Layout()
-
-        
-        #self.SetSizer( bSizer2 )
-        #=======================================================================
-        # self.Layout()
-        # 
-        # self.Centre( wx.BOTH )
-        #=======================================================================
+        self.GageMAF.SetTicks(ticks)
+        self.GageMAF.SetTicksColour(wx.WHITE)
+        self.GageMAF.SetTicksFont( wx.Font( 6, 74, 90, 90, False, "Calibri" ) )       
+        self.GageMAF.SetHandColour(wx.WHITE)
+        self.GageMAF.SetSpeedBackground(wx.BLACK)
+        self.GageMAF.SetArcColour(wx.BLUE)
+        self.GageMAF.DrawExternalArc(False)
+        self.GageMAF.SetHandColour(wx.WHITE)       
+        self.GageMAF.SetSpeedValue(40)
+    
     def ShowSensors(self):
         
         sensors = self.getSensorsToDisplay(self.istart)
+        
+        for index, sensor in sensors:
+        
+            if self.displayKmh & index ==13:
+                print 'get kmh'
+                (name, value, unit) = self.port.sensor(index)
+                self.GageKmh.SetSpeedValue(value)    
+                 
+            if self.displayRPM & index ==12:
+                print 'get rpm'
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageRPM.SetSpeedValue(value)
+                   
+            if self.displayLoad & index ==4:
+               print 'get load'
+               (name, value, unit) = self.port.sensor(index)  
+               self.GageLoad.SetSpeedValue(value)
+                     
+            if self.displayCoolant & index ==5:
+                print 'get coolant'
+                (name, value, unit) = self.port.sensor(index)
+                self.GageCoolantTemp.SetSpeedValue(value) 
+                    
+            if self.displayIntake & index ==15:
+                print 'get intake'
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageIntakeTemp.SetSpeedValue(value)
+                                  
+            if self.displayMAF & index ==16:
+                print 'get maf'  
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageMAF.SetSpeedValue(value)   
+                   
+                    
+        # Timer for update
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.refresh, self.timer)
+        self.timer.Start(1000)
 
-        # Destroy previous widgets
-        for b in self.boxes: b.Destroy()
-        for t in self.texts: t.Destroy()
-        self.boxes = []
-        self.texts = []
 
-        # Main sizer
-        boxSizerMain = wx.BoxSizer(wx.VERTICAL)
-
-        # Grid sizer
-        nrows, ncols = 1, 1
-        vgap, hgap = 50, 50
-        gridSizer = wx.GridSizer(nrows, ncols, vgap, hgap)
-
-        # Create a box for each sensor
-#===============================================================================
-#         for index, sensor in sensors:
-#             
-#             (name, value, unit) = self.port.sensor(index)
-# 
-#             box = OBDStaticBox(self, wx.ID_ANY)
-#             self.boxes.append(box)
-#             boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
-# 
-#             # Text for sensor value 
-#             if type(value)==float:  
-#                 value = str("%.2f"%round(value, 3))                    
-#             t1 = wx.StaticText(parent=self, label=str(value), style=wx.ALIGN_CENTER)
-#             t1.SetForegroundColour('WHITE')
-#             font1 = wx.Font(30, wx.ROMAN, wx.NORMAL, wx.NORMAL, faceName="Monaco")
-#             t1.SetFont(font1)
-#             boxSizer.Add(t1, 0, wx.ALIGN_CENTER | wx.ALL, 70)
-#             boxSizer.AddStretchSpacer()
-#             self.texts.append(t1)
-# 
-#             # Text for sensor name
-#             t2 = wx.StaticText(parent=self, label=name, style=wx.ALIGN_CENTER)
-#             t2.SetForegroundColour('WHITE')
-#             font2 = wx.Font(10, wx.ROMAN, wx.NORMAL, wx.BOLD, faceName="Monaco")
-#             t2.SetFont(font2)
-#             boxSizer.Add(t2, 0, wx.ALIGN_CENTER | wx.ALL, 45)
-#             self.texts.append(t2)
-#             gridSizer.Add(boxSizer, 1, wx.EXPAND | wx.ALL)
-#===============================================================================
-
-        # Add invisible boxes if necessary
-        #=======================================================================
-        # nsensors = len(sensors)
-        # for i in range(1-nsensors):
-        #     box = OBDStaticBox(self)
-        #     boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
-        #     self.boxes.append(box)
-        #     box.Show(False)
-        #     gridSizer.Add(boxSizer, 1, wx.EXPAND | wx.ALL)
-        #=======================================================================
-           
-        # Layout
-        boxSizerMain.Add(gridSizer, 1, wx.EXPAND | wx.ALL, 0)
-        self.SetSizer(boxSizerMain)
-        self.Refresh()
-        self.Layout() 
+    def refresh(self, event):
+        sensors = self.getSensorsToDisplay(self.istart)
+        print 'refresh'
+        for index, sensor in sensors:
+        
+            if self.displayKmh & index ==13:
+                print 'get kmh'
+                (name, value, unit) = self.port.sensor(index)
+                self.GageKmh.SetSpeedValue(value)    
+                 
+            if self.displayRPM & index ==12:
+                print 'get rpm'
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageRPM.SetSpeedValue(value)
+                   
+            if self.displayLoad & index ==4:
+               print 'get load'
+               (name, value, unit) = self.port.sensor(index)  
+               self.GageLoad.SetSpeedValue(value)
+                     
+            if self.displayCoolant & index ==5:
+                print 'get coolant'
+                (name, value, unit) = self.port.sensor(index)
+                self.GageCoolantTemp.SetSpeedValue(value) 
+                    
+            if self.displayIntake & index ==15:
+                print 'get intake'
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageIntakeTemp.SetSpeedValue(value)
+                                  
+            if self.displayMAF & index ==16:
+                print 'get maf'  
+                (name, value, unit) = self.port.sensor(index) 
+                self.GageMAF.SetSpeedValue(value)   
     
     def onCtrlC(self, event):
         self.GetParent().Close()  

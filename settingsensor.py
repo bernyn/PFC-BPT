@@ -30,19 +30,17 @@ class SettitingSensorPanel(wx.Panel):
         leftPanel = wx.Panel(panelSettings, -1)
         rightPanel = wx.Panel(panelSettings, -1) 
  
- 
-        #self.log = wx.TextCtrl(rightPanel, -1, style=wx.TE_MULTILINE)
         self.list = CheckListCtrl(rightPanel)
         self.list.InsertColumn(0, 'Name', width=140)
         self.list.InsertColumn(1, 'Command')
         self.list.InsertColumn(2, 'Units')
             
-        for i,e in enumerate(obd_sensors.SENSORS):      
+        for i,e in enumerate(self.sensors):     
             index = self.list.InsertStringItem(sys.maxint, e.name)
             self.list.SetStringItem(index, 1, e.cmd)
             self.list.SetStringItem(index, 2, e.unit)
         
-        num = self.list.GetItemCount() 
+
         self.cfg = wx.Config('sensorsettings')
       
         num = self.list.GetItemCount()
@@ -50,11 +48,10 @@ class SettitingSensorPanel(wx.Panel):
         for i in range(num):
             sensorlist.append(False)
         if self.cfg.Exists('Supported PIDs'):             
-           # print ("confg load")
             for i in range(num):
                 self.list.CheckItem(i,self.cfg.ReadBool(self.list.GetItemText(i)))
-                #if self.cfg.ReadBool(self.list.GetItemText(i))==True: 
-                #print('i= '+ str(i) + 'Sensor ' + self.list.GetItemText(i) + ' value= '+ str(self.cfg.ReadBool(self.list.GetItemText(i))))                          
+                if self.cfg.ReadBool(self.list.GetItemText(i))==True: 
+                    print ('i= '+ str(i) + 'Sensor ' + self.list.GetItemText(i) + ' value= '+ str(self.cfg.ReadBool(self.list.GetItemText(i))))                          
         else:
             for i in range(num):
                 self.list.CheckItem(i,False)
@@ -65,23 +62,18 @@ class SettitingSensorPanel(wx.Panel):
         selectall = wx.Button(leftPanel, -1, 'Select All', size=(65, -1))
         deselect = wx.Button(leftPanel, -1, 'Deselect All', size=(65, -1))
         save = wx.Button(leftPanel, -1, 'Save', size=(65, -1))
-        #recrd= wx.ToggleButton(leftPanel, -1, 'Record', size=(65,-1))
-        #back= wx.Button(leftPanel, -1, 'Back', size=(65,-1))
+ 
       
         self.Bind(wx.EVT_BUTTON, self.OnSelectAll, id=selectall.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnDeselectAll, id=deselect.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnSave, id=save.GetId())
-        #self.Bind(wx.EVT_BUTTON, self.OnClose, id=back.GetId())
-       
-              
-                   
+ 
+         
         vbox2Settings.Add(selectall, wx.EXPAND)
         vbox2Settings.Add(deselect, wx.EXPAND)
         vbox2Settings.Add(save, wx.EXPAND)
-        #vbox2Settings.Add(back, wx.EXPAND)
-        
-        
-        
+       
+ 
         vbox = wx.BoxSizer( wx.VERTICAL )      
         vbox.Add(self.list, 1,  wx.TOP, 5)
         vbox.Add((-1, 1))
@@ -128,16 +120,22 @@ class SettitingSensorPanel(wx.Panel):
         for i in range(num):            
             if self.list.IsChecked(i):
                 self.cfg.WriteBool(self.list.GetItemText(i), True)
+                print self.list.GetItemText(i)
             else:
                 self.cfg.WriteBool(self.list.GetItemText(i), False)    
                           
-                      
-            
-    #===========================================================================
-    # def OnClose(self, e):        
-    #     self.Close(True)   
-    #===========================================================================
- 
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
+        
+    def getSensors(self):
+        return self.sensors
+        
+    def getPort(self):
+        return self.port                  
+             
     def __del__( self ):
         pass
     # Virtual event handlers, overide them in your derived class
