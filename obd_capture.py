@@ -15,15 +15,6 @@ class OBD_Capture():
         self.supportedSensorList = []
         self.port = None
         localtime = time.localtime(time.time())
-        self.path= os.path.dirname(__file__)
-        self.record_path = os.path.join(self.path, 'recrods/')
-        self.filedate = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')       
-        self.record_file = "records-" +self.filedate +".csv"
-        f = open(self.record_file, 'w')
-        f.close()
-
-        if not os.path.isdir(self.record_path):
-            os.makedirs(self.record_path)
 
     def connect(self):
         portnames = self.scanSerial()
@@ -116,7 +107,8 @@ class OBD_Capture():
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
             pass
-
+        return available
+    
 if __name__ == "__main__":
 
     o = OBD_Capture()

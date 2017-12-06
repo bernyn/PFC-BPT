@@ -252,12 +252,12 @@ class OBDLoadingPanel(wx.Panel):
         connected = False
         start_time = datetime.now()
         print(start_time)
+        self.textCtrl.AddText(" Trying to connect ..." + time.asctime())
         while not connected:
             connected = self.c.is_connected()
             #self.textCtrl.Clear()
-            #self.textCtrl.AddText(" Trying to connect ..." + time.asctime())
-            #DEBUG
-            connected = False
+        
+            
             if connected: 
                 break
 
@@ -511,6 +511,16 @@ class PFCFrame(wx.Frame):
             self.modelistpanel.setEcoMode(False)  
         
     def update(self,event):
+        self.path= os.path.dirname(__file__)
+        self.record_path = os.path.join(self.path, 'recrods/')
+        self.filedate = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')       
+        self.record_file = "records-" +self.filedate +".csv"
+        f = open(self.record_file, 'w')
+        f.close()
+        
+        if not os.path.isdir(self.record_path):
+            os.makedirs(self.record_path)
+            
         if self.panelLoading:
             connection = self.panelLoading.getConnection()
             sensors = self.panelLoading.getSensors()
@@ -520,7 +530,13 @@ class PFCFrame(wx.Frame):
 	    print (sensors)
         self.modenumericalpanel = ModeNumericalPanel(self)
         
-        #debug if sensors:
+        
+        if connection:
+            print 'if connection'
+            self.modenumericalpanel.setConnection(connection)
+            self.modelistpanel.setConnection(connection)
+            self.modegraphicalpanel.setConnection(connection)
+       
         if sensors:    
             print 'sending sensors and port'
             self.modenumericalpanel.setSensors(sensors)
@@ -532,13 +548,6 @@ class PFCFrame(wx.Frame):
             self.setvalues(sensors, port)
             self.dtcpanel.setPort(port)
  
-            print 'gettinb sens and port'
-            #===================================================================
-            # s= self.modenumericalpanel.getSensors()
-            # p= self.modenumericalpanel.getPort()
-            # print s
-            # print str(p)
-            #===================================================================
             print 'sens and p gotten'
             self.setvalues(sensors, port)
         
