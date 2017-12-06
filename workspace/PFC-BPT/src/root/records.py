@@ -1,18 +1,21 @@
 
 #SELECTOR MULTIPLE
-from pylab import plotfile, show, gca
-import matplotlib.cbook as cbook
-import matplotlib.pyplot as plt
-import os
-import wx
-import sys
-import pandas as pd
-import numpy as np
-from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
-import obd_sensors
 from _codecs import decode
 from encodings import ascii
+import os
+import sys
+
 from pandas.io.pytables import IndexCol
+from pylab import plotfile, show, gca
+import wx
+from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+import matplotlib.cbook as cbook
+import matplotlib.pyplot as plt
+import numpy as np
+import obd_sensors
+import pandas as pd
+
 
 wildcard = "log source (*.txt; *.csv; *.log)|*.txt;*.csv;*.log;|" \
          "All files (*.*)|*.*"
@@ -59,8 +62,7 @@ class RecordsPanel(wx.Panel):
         self.list.InsertColumn(1, 'Command')
         self.list.InsertColumn(2, 'Units')
         
-      
-            
+         
         for i,e in enumerate(obd_sensors.SENSORS):
             index = self.list.InsertStringItem(sys.maxint, e.name)
             self.list.SetStringItem(index, 1, e.cmd)
@@ -79,8 +81,6 @@ class RecordsPanel(wx.Panel):
         else:
             for i in range(num):
                 self.list.CheckItem(i,False)
-                #print('Sensor ' + self.list.GetItemText(i) + ' value'+ str(self.cfg.ReadBool('Sensorlist'+str(i)))) 
-
         
      
         vbox2Settings = wx.BoxSizer(wx.VERTICAL)
@@ -92,37 +92,26 @@ class RecordsPanel(wx.Panel):
         recordinfo = wx.Button(leftPanel, -1, 'Record info', size=(75, -1))
         deletefile = wx.Button(leftPanel, -1, 'Delete File', size=(75, -1))
 
-
-        #recrd= wx.ToggleButton(leftPanel, -1, 'Record', size=(65,-1))
         self.Bind(wx.EVT_BUTTON, self.OnOpen, id=openfile.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnPlot, id=plotrecords.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnSelectAll, id=selectall.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnDeselectAll, id=deselect.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnRecordInfo, id=recordinfo.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnDeleteFile, id=deletefile.GetId())
-        
-       
-              
+                         
         vbox2Settings.Add(openfile, wx.EXPAND)
         vbox2Settings.Add(plotrecords, wx.EXPAND)        
         vbox2Settings.Add(selectall, wx.EXPAND)
         vbox2Settings.Add(deselect, wx.EXPAND)
         vbox2Settings.Add(recordinfo, wx.EXPAND)
         vbox2Settings.Add(deletefile, wx.EXPAND)
-
-
-        
-        
-        
-            
+                
         vbox.Add(self.list, 1,  wx.TOP, 5)
         vbox.Add((-1, 1))
         vbox.Add((-1, 1))
-        
-          
+                  
         rightPanel.SetSizer(vbox)
 
-        
         hboxSettings.Layout()
         vboxSettings.Layout()
         vbox2Settings.Layout()
@@ -176,9 +165,7 @@ class RecordsPanel(wx.Panel):
             datatoplot.plot()
             show() 
             
-            #fname = cbook.get_sample_data(self.path, asfileobj=False)  
-            #plotfile(fname, (datatoplot), subplots=False)
-            #show() 
+
         else: wx.MessageBox("No Record File selected","Warning",wx.OK)
      
         

@@ -1,18 +1,20 @@
 #SELECTOR MULTIPLE
-from pylab import plotfile, show, gca
-import matplotlib.cbook as cbook
-
-import wx
 import sys
+
+from pylab import plotfile, show, gca
+import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+import matplotlib.cbook as cbook
 import obd_sensors
 
- 
+
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         CheckListCtrlMixin.__init__(self)
         ListCtrlAutoWidthMixin.__init__(self)
+        
       
 class SettingRecordPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
@@ -38,7 +40,7 @@ class SettingRecordPanel(wx.Panel):
         self.list.InsertColumn(1, 'Command')
         self.list.InsertColumn(2, 'Units')
             
-        for i,e in enumerate(obd_sensors.SENSORS):
+        for i,e in enumerate(self.sensors):
             index = self.list.InsertStringItem(sys.maxint, e.name)
             self.list.SetStringItem(index, 1, e.cmd)
             self.list.SetStringItem(index, 2, e.unit)
@@ -56,7 +58,7 @@ class SettingRecordPanel(wx.Panel):
         else:
             for i in range(num):
                 self.list.CheckItem(i,False)
-                #print('Sensor ' + self.list.GetItemText(i) + ' value'+ str(self.cfg.ReadBool('Sensorlist'+str(i)))) 
+                
         valuetoggle= False
         if self.cfg.Exists('RecordMode'):
             valuetoggle= self.cfg.ReadBool('RecordMode')    
@@ -112,7 +114,19 @@ class SettingRecordPanel(wx.Panel):
         
         self.Centre( wx.BOTH )    
          
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
+    def setPort(self, port):
+        self.port = port
+        
+    def getSensors(self):
+        return self.sensors
+        
+    def getPort(self):
+        return self.port
 
+    
     def OnSelectAll(self, event):
         num = self.list.GetItemCount()
         for i in range(num):

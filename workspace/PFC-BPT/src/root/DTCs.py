@@ -6,10 +6,12 @@
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
-import wx
-import wx.xrc
 from datetime import datetime
 
+import wx
+import wx.xrc
+
+from obd_capture import OBD_Capture
 
 GET_DTC_COMMAND   = "03"
              
@@ -48,8 +50,7 @@ class DTCsPanel( wx.Panel ):
         
         self.dtcText = wx.TextCtrl(self.m_panel1,size = (-1,80),style = wx.TE_MULTILINE) 
         bSizer9.Add(self.dtcText,1, wx.EXPAND|wx.ALL,1) 
-          
-        
+              
         
         hSizer1 = wx.BoxSizer( wx.HORIZONTAL )
          
@@ -100,11 +101,16 @@ class DTCsPanel( wx.Panel ):
         bSizer9.Fit( self.m_panel1 )
         bSizer2.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 0 )
         
+        # Port 
+        self.port = None
+        
         
         self.SetSizer( bSizer2 )
         self.Layout()
         
         self.Centre( wx.BOTH )
+        
+        self.capture= OBD_Capture
         
         # Connect Events
 
@@ -114,6 +120,12 @@ class DTCsPanel( wx.Panel ):
         self.clearDTCbutton.Bind( wx.EVT_BUTTON, self.OnClearDTC )
         #self.serialbackbutton.Bind( wx.EVT_BUTTON, self.OnSerialBack )
     
+    def setPort(self, port):
+        self.port = port
+        
+        
+    def getPort(self):
+        return self.port
         
     
     def __del__( self ):
@@ -128,17 +140,19 @@ class DTCsPanel( wx.Panel ):
         self.dtcText.AppendText(('Conf saved on ')+ datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
     def OnReadDTC( self, event ):    
-        self.dtcText.AppendText('GET_DTC_COMMAND   = "03"; ')
+        self.DTCCodes = self.capture.capture_dtc()
+        print self.DTCCodes
+        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
 
-
-    
+   
     def OnReadDTCF( self, event ):
-        self.dtcText.AppendText('GET_FREEZE_DTC_COMMAND = "07"; ')
-        event.Skip()
+        self.DTCCodes = self.capture.capture_dtc()
+        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
     
     def OnClearDTC( self, event ):
-        self.dtcText.AppendText('CLEAR_DTC_COMMAND = "04"; ')
-        event.Skip()
+        self.DTCCodes = self.capture.clear_dtc()
+        print self.DTCCodes
+        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
         
     
     def OnSerialBack( self, event ):
