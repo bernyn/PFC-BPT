@@ -386,7 +386,7 @@ class ModeNumericalPanel(wx.Panel):
             for i in range(self.num):
                 self.list.CheckItem(i,False)
     
-    def getAlarms(self, event):
+    def getAlarms(self):
     
         self.cfg = wx.Config('alarmsettings')
         if self.cfg.Exists('alarm1minstatus'):  
