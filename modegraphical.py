@@ -432,7 +432,9 @@ class ModeGraphicalPanel ( wx.Panel ):
         sensors = self.getSensorsToDisplay(self.istart)
         print 'refresh'
         for index, sensor in sensors:
-        
+            print index
+            print sensor
+         
             if self.displayKmh & index ==13:
                 print 'get kmh'
                 (name, value, unit) = self.port.sensor(index)

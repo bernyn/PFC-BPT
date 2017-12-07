@@ -532,7 +532,9 @@ class PFCFrame(wx.Frame):
             port = self.panelLoading.getPort()
             self.panelLoading.Destroy()
             print ('in update')
-	    print (sensors)
+	    print (connection)
+        print (sensors)
+        print (port)
         self.modenumericalpanel = ModeNumericalPanel(self)
         
         
@@ -570,6 +572,12 @@ class PFCFrame(wx.Frame):
     
     def getvalues (self):
         return self.sensors, self.port  
+    
+    def getport (self):
+        return self.port
+    
+    def getsensor (self):
+        return self.sensors  
     
     
     def OnSerial(self, etent):
@@ -715,8 +723,7 @@ class PFCFrame(wx.Frame):
     
     def UpdateDTC(self,event):
         print 'DTC timer'
-        self.capture= OBD_Capture()
-        self.DTCCodes = self.capture.capture_dtc()
+        self.DTCCodes = self.c.capture_dtc()
         if self.DTCCodes : 
             wx.MessageBox('List of DTCs' + str(self.DTCCodes), 'DTC Codes', wx.OK | wx.ICON_INFORMATION)
                

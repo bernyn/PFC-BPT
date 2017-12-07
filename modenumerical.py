@@ -148,7 +148,9 @@ class ModeNumericalPanel(wx.Panel):
         print 'showsensors'
         print self.port
         sensors = self.getSensorsToDisplay(self.istart)
-
+        name =""
+        value= ""
+        unit= ""
         # Destroy previous widgets
         for b in self.boxes: b.Destroy()
  #       for t in self.texts: t.Destroy()
