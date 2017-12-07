@@ -46,11 +46,12 @@ class OBD_Capture():
     def record(self):
         print "recording"
         line=""
-        supported_sensor_list= self.get_supported_sensor_list()
+        #supported_sensor_list= self.get_supported_sensor_list()
         self.supp = self.port.sensor(0)[1]
         self.supportedSensorList = []
         self.unsupportedSensorList = []
-        filerecord= self.getrecordfile()
+        #filerecord= self.getrecordfile()
+        
         
         for i in range(0, len(self.supp)):
             if self.supp[i] == "1":
@@ -60,8 +61,8 @@ class OBD_Capture():
                 self.unsupportedSensorList.append([i+1, obd_sensors.SENSORS[i+1]])
         
         for supportedSensor in self.supportedSensorList:
-            line += "date= " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname) + "\n"
-        
+            line += "suported sensors: " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname) + "\n"
+        print line
         time.sleep(3)
                
         if(self.port is None):
@@ -70,11 +71,11 @@ class OBD_Capture():
          
         line = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')+ ";"  +"index" + ";"+ "name"+ "\n"
       
-        for supportedSensor in supported_sensor_list:
+        for supportedSensor in self.unsupportedSensor:
             sensorIndex = supportedSensor[0]
             (name, value, unit) = self.port.sensor(sensorIndex)
             line += name + ";" + str(value) + ";" + str(unit) + "\n"
-        self.write_record(filerecord, line)
+        #self.write_record(filerecord, line)
         return line
 
             
