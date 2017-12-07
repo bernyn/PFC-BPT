@@ -117,4 +117,4 @@ if __name__ == "__main__":
     if not o.is_connected():
         print "Not connected"
     else:
-        o.capture_data()
+        o.record()

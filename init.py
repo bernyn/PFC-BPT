@@ -49,8 +49,8 @@ PANEL_MODE_LIST = "09"
 def obd_connect(o):
     o.connect()
     
-def obd_record(o):
-    o.record()
+#def obd_record(o):
+ #   o.record()
 
 class OBDConnection(object):
     """
@@ -67,9 +67,9 @@ class OBDConnection(object):
         self.t = Thread(target=obd_connect, args=(self.c,))
         self.t.start()
     
-    def record(self):
-        self.tcapt=Thread(target=obd_record, args=(self.c,))
-        self.tcapt.start()
+   # def record(self):
+    #    self.tcapt=Thread(target=obd_record, args=(self.c,))
+     #   self.tcapt.start()
 
     def is_connected(self):
         return self.c.is_connected()

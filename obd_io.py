@@ -119,25 +119,22 @@ class OBDPort:
             self.State = 0
             return None
          
-        #debug_display(self._notify_window, 2, "atz (reset) response:" + self.ELMver)
         print ("atz (reset) response:" + self.ELMver) 
         self.send_command("ate0")  # echo off
-        #debug_display(self._notify_window, 2, "ate0 (echo off) response:" + self.get_result())
+
         print ("ate0 (echo off) response:" + self.get_result())
         
          
         self.send_command("atl0")  # line feed off
-        #debug_display(self._notify_window, 2, "ate0 (Line feed off) response:" + self.get_result())
-        print ("ate0 (Line feed off) response:" + self.get_result()) 
+
+        print ("atl0 (Line feed off) response:" + self.get_result()) 
         self.send_command("ats0")  # spaces off
-        #debug_display(self._notify_window, 2, "ate0 (Spaces off) response:" + self.get_result())
-        print  ("ate0 (Spaces off) response:" + self.get_result())
-         #self.send_command("ath0")  # headers off
-         #debug_display(self._notify_window, 2, "ate0 (Headers off) response:" + self.get_result())      
+
+        print  ("ats0 (Spaces off) response:" + self.get_result())
         self.send_command("ATSP5") #select auto protocol
          
-        #debug_display(self._notify_window, 2, "atsp0 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
-        print ("atsp0 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
+
+        print ("atsp5 (Fast init ISO_14230_4_KWP_FAST) response:" + self.get_result())
         self.send_command("0100")
         ready = self.get_result()
          
@@ -145,7 +142,6 @@ class OBDPort:
             self.State = 0
             return None
             
-       # debug_display(self._notify_window, 2, "0100 response:" + ready)
         print ("0100 response:" + ready)
         return None
               
