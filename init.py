@@ -295,6 +295,8 @@ class OBDLoadingPanel(wx.Panel):
     def getUnSupportedSensorList(self):
         return self.unsupported_list
 
+    def getClass(self):
+        return self.c
     
     def onCtrlC(self, event):
         self.GetParent().Close()
@@ -530,6 +532,7 @@ class PFCFrame(wx.Frame):
             connection = self.panelLoading.getConnection()
             sensors = self.panelLoading.getSensors()
             port = self.panelLoading.getPort()
+            c = self.panelLoading.getClass()
             self.panelLoading.Destroy()
             print ('in update')
 	    print (connection)
@@ -570,6 +573,9 @@ class PFCFrame(wx.Frame):
         self.sensors = sensors
         self.port = port     
     
+    def setclass (self, c):
+        self.c= c
+    
     def getvalues (self):
         return self.sensors, self.port  
     
@@ -578,6 +584,9 @@ class PFCFrame(wx.Frame):
     
     def getsensor (self):
         return self.sensors  
+    
+    def getClass (self):
+        return self.c
     
     
     def OnSerial(self, etent):
@@ -723,7 +732,8 @@ class PFCFrame(wx.Frame):
     
     def UpdateDTC(self,event):
         print 'DTC timer'
-        self.DTCCodes = self.c.capture_dtc()
+        getclass = self.getClass() 
+        self.DTCCodes = getclass.capture_dtc()
         if self.DTCCodes : 
             wx.MessageBox('List of DTCs' + str(self.DTCCodes), 'DTC Codes', wx.OK | wx.ICON_INFORMATION)
                
