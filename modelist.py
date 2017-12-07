@@ -105,20 +105,38 @@ class ModeListPanel(wx.Panel):
         """
         Display the sensors.
         """
-        
+        print "showsensor  list"
         sensors = self.getSensorsToDisplay(self.istart)
 
         self.cfg = wx.Config('sensorsettings')
         num = self.list.GetItemCount()
        
         if self.cfg.Exists('Supported PIDs'):             
-                        
+            print "creating list with conf"                
             for i,e in enumerate(self.sensors):
                  
                 if self.cfg.ReadBool(e.name)==True:
                     index = self.list.InsertStringItem(sys.maxint, e.name)
                     self.list.SetStringItem(index, 1, e.value)
-                    self.list.SetStringItem(index, 2, e.unit)                  
+                    self.list.SetStringItem(index, 2, e.unit)      
+        
+        print "end creating list with conf"    
+        itext = 0
+        print "creating list with values" 
+        for index, sensor in sensors:
+
+            (name, value, unit) = self.port.sensor(index)
+            index = self.list.InsertStringItem(sys.maxint, e.name)
+            self.list.SetStringItem(index, 2, e.unit) 
+            if type(value)==float:  
+                value = str("%.2f"%round(value, 3)) 
+                self.list.SetStringItem(index, 1, e.value)
+            if itext<len(self.texts):
+                #self.texts[itext*2].SetLabel(str(value))
+                self.list.SetStringItem(index, 1, e.value)
+            itext += 1 
+                                            
+                    
          
         else:
             print'empty list'
@@ -130,6 +148,7 @@ class ModeListPanel(wx.Panel):
 
 
     def refresh(self, event):
+        print "refreshing sensors"
         sensors = self.getSensorsToDisplay(self.istart)   
         
         itext = 0
@@ -144,7 +163,24 @@ class ModeListPanel(wx.Panel):
             
             itext += 1 
             print (name+ '=' +value +' ' +unit)                    
- 
+        print "finish refresh"
+        itext = 0
+        
+        print "refreshing list with values" 
+        for index, sensor in sensors:
+
+            (name, value, unit) = self.port.sensor(index)
+            index = self.list.InsertStringItem(sys.maxint, name)
+            self.list.SetStringItem(index, 2, unit) 
+            if type(value)==float:  
+                value = str("%.2f"%round(value, 3)) 
+                self.list.SetStringItem(index, 1, value)
+            if itext<len(self.texts):
+                #self.texts[itext*2].SetLabel(str(value))
+                self.list.SetStringItem(index, 1, value)
+            itext += 1 
+        
+        
                 
     def update(self, event):
         if self.panelLoading:

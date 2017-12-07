@@ -436,33 +436,48 @@ class ModeGraphicalPanel ( wx.Panel ):
             if self.displayKmh & index ==13:
                 print 'get kmh'
                 (name, value, unit) = self.port.sensor(index)
-                self.GageKmh.SetSpeedValue(value)    
+                self.GageKmh.SetSpeedValue(value)
+                print name
+                print str(value)
+                print (unit)    
                  
             if self.displayRPM & index ==12:
                 print 'get rpm'
                 (name, value, unit) = self.port.sensor(index) 
                 self.GageRPM.SetSpeedValue(value)
+                print name
+                print str(value)
+                print (unit)
                    
             if self.displayLoad & index ==4:
                print 'get load'
                (name, value, unit) = self.port.sensor(index)  
                self.GageLoad.SetSpeedValue(value)
+               print name
+               print str(value)
+               print (unit)
                      
             if self.displayCoolant & index ==5:
                 print 'get coolant'
                 (name, value, unit) = self.port.sensor(index)
                 self.GageCoolantTemp.SetSpeedValue(value) 
-                    
+                print name
+                print str(value)
+                print (unit)     
             if self.displayIntake & index ==15:
                 print 'get intake'
                 (name, value, unit) = self.port.sensor(index) 
                 self.GageIntakeTemp.SetSpeedValue(value)
-                                  
+                print name
+                print str(value)
+                print (unit)                  
             if self.displayMAF & index ==16:
                 print 'get maf'  
                 (name, value, unit) = self.port.sensor(index) 
                 self.GageMAF.SetSpeedValue(value)   
-    
+                print name
+                print str(value)
+                print (unit)
     def onCtrlC(self, event):
         self.GetParent().Close()  
     

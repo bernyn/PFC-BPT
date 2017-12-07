@@ -76,7 +76,7 @@ class OBDConnection(object):
 
     def get_output(self):
         if self.c and self.c.is_connected():
-            return self.c.capture_data()
+            return self.c.record()
         return ""
 
     def get_port(self):
@@ -273,7 +273,7 @@ class OBDLoadingPanel(wx.Panel):
                 self.textCtrl.AddText(" Failed Connection: " + port_name +"\n")
                 self.textCtrl.AddText(" Please hold alt & esc to view terminal.")
             #self.textCtrl.AddText(str(self.c.get_output()))
-            print str(self.c.get_output()) 
+            #print str(self.c.get_output()) 
             self.sensors = self.c.get_sensors_list()
             self.port = self.c.get_port()
             print 'sensor and port'
@@ -325,6 +325,11 @@ class PFCFrame(wx.Frame):
         self.timer = wx.Timer(self)   
         self.timer.Start(1000)
         self.timerDTC = wx.Timer(self, id=2)
+        
+        self.connection = None
+        self.sensors = []
+        self.port = None
+        
         
         self.menubar = wx.MenuBar( 0 )
         self.menuFile = wx.Menu()
@@ -710,7 +715,7 @@ class PFCFrame(wx.Frame):
     
     def UpdateDTC(self,event):
         print 'DTC timer'
-        self.capture= OBD_Capture
+        self.capture= OBD_Capture()
         self.DTCCodes = self.capture.capture_dtc()
         if self.DTCCodes : 
             wx.MessageBox('List of DTCs' + str(self.DTCCodes), 'DTC Codes', wx.OK | wx.ICON_INFORMATION)
