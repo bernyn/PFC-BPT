@@ -172,7 +172,7 @@ class OBDPort:
          # '41 11 0 0\r\r'
          
          # 9 seems to be the length of the shortest valid response
-         if len(code) < 7:
+         if len(code) < 6:
              #raise Exception("BogusCode")
              print "boguscode?"+code
          

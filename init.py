@@ -483,6 +483,8 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.settingsesorpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        self.sensors, self.port = self.getvalues()
+        self.settingsesorpanel.setSensors(self.sensors)
         self.settingsesorpanel.showSettingSensorPanel()
         self.settingsesorpanel.SetFocus()
         self.Layout()
@@ -508,6 +510,8 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.recordspanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        self.sensors, self.port = self.getvalues()
+        self.recordspanel.setSensors(self.sensors)
         self.recordspanel.showRecordsPanel()
         self.recordspanel.SetFocus()
         self.Layout()
@@ -545,9 +549,7 @@ class PFCFrame(wx.Frame):
             print ('in update')
 	    print (connection)
         print (sensors)
-        print (port)
-        self.modenumericalpanel = ModeNumericalPanel(self)
-        
+        print (port)       
         
         if connection:
             print 'if connection'
@@ -568,10 +570,15 @@ class PFCFrame(wx.Frame):
  
             print 'sens and p gotten'
             self.setvalues(sensors, port)
+            self.setclass(c) 
         
+        self.modenumericalpanel = ModeNumericalPanel(self)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.modelistpanel, 1, wx.EXPAND)
+        self.sizer.Add(self.modenumericalpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        self.sensors, self.port = self.getvalues()
+        self.modenumericalpanel.setPort(self.port)
+        self.modenumericalpanel.setSensors(self.sensors)
         self.modenumericalpanel.showModeNumericalPanel()
         self.modenumericalpanel.ShowSensors()
         self.modenumericalpanel.SetFocus()
@@ -689,6 +696,7 @@ class PFCFrame(wx.Frame):
         print self.port  
         self.modelistpanel.setPort(self.port)
         self.modelistpanel.showModeListPanel()
+        self.modelistpanel.ShowSensors()
         self.modelistpanel.SetFocus()
         self.Layout()
     

@@ -106,8 +106,11 @@ class ModeListPanel(wx.Panel):
         Display the sensors.
         """
         print "showsensor  list"
+        
         sensors = self.getSensorsToDisplay(self.istart)
-
+        name =""
+        value= ""
+        unit= ""
         self.cfg = wx.Config('sensorsettings')
         num = self.list.GetItemCount()
        
@@ -150,10 +153,13 @@ class ModeListPanel(wx.Panel):
     def refresh(self, event):
         print "refreshing sensors"
         sensors = self.getSensorsToDisplay(self.istart)   
-        
+        sensors = self.getSensorsToDisplay(self.istart)
+        name =""
+        value= ""
+        unit= ""
+        print sensors 
         itext = 0
         for index, sensor in sensors:
-
             (name, value, unit) = self.port.sensor(index)
             if type(value)==float:  
                 value = str("%.2f"%round(value, 3)) 
@@ -179,7 +185,7 @@ class ModeListPanel(wx.Panel):
                 #self.texts[itext*2].SetLabel(str(value))
                 self.list.SetStringItem(index, 1, value)
             itext += 1 
-        
+            print name
         
                 
     def update(self, event):

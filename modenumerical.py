@@ -179,7 +179,7 @@ class ModeNumericalPanel(wx.Panel):
     		print 'sensor in box'
             
             
-            self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.ALIGN_CENTER, wx.DefaultSize, 0 )
             self.sensorData.Wrap( -1 )
             self.sensorData.SetFont( wx.Font( 18, 74, 90, 90, False, "Arial" ) )
             staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
@@ -226,12 +226,16 @@ class ModeNumericalPanel(wx.Panel):
             if type(value)==float:  
                 value = str("%.2f"%round(value, 3))  
                 print ('Value Refresh= ' + str(value))
-                self.sensorData.SetLabel(value)
+                self.sensorData.SetLabel(str(value))
             else:
-                self.sensorData.SetLabel(value)    
+                self.sensorData.SetLabel(str(value))    
+            
+            self.sensorName.SetLabel(str(name))
+            self.sensorUnit.SetLabel(str(unit))
             
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
+            
             if name == "Engine RPM" : self.rpm = value
             
             if name == "Vehicle Speed" : self.speed =value
