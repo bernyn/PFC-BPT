@@ -179,18 +179,20 @@ class ModeNumericalPanel(wx.Panel):
     		print 'sensor in box'
             
             
-            self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.ALIGN_CENTER, wx.DefaultSize, 0 )
+            self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorData.Wrap( -1 )
-            self.sensorData.SetFont( wx.Font( 18, 74, 90, 90, False, "Arial" ) )
+            self.sensorData.SetFont( wx.Font(18, wx.DECORATIVE, wx.ITALIC, wx.NORMAL)) 
             staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
+            self.sensorUnit = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(unit), wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.sensorUnit.Wrap( -1 )
+            staticBox.Add( self.sensorUnit, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
             
             self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorName.Wrap( -1 )
             staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
             
-            self.sensorUnit = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(unit), wx.DefaultPosition, wx.DefaultSize, 0 )
-            self.sensorUnit.Wrap( -1 )
-            staticBox.Add( self.sensorUnit, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
             
             
         self.panelbox.SetSizer( staticBox )
@@ -443,11 +445,4 @@ class ModeNumericalPanel(wx.Panel):
             self.Bind(wx.EVT_TIMER, self.onCloseUp, self.timer)
             self.timer.Start(3000)
         
-    def checkDTC(self):
-        self.DTCCodes=[]
-        self.DTCCodes = self.port.get_dtc()
-        if self.DTCCodes:
-            wx.MessageBox('DTC: ' + self.DTCCodes, 'DTC code encounter', wx.OK | wx.ICON_EXCLAMATION)
-        
-    
-    
+

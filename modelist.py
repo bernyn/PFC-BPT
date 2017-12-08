@@ -138,7 +138,9 @@ class ModeListPanel(wx.Panel):
                 #self.texts[itext*2].SetLabel(str(value))
                 self.list.SetStringItem(index, 1, e.value)
             itext += 1 
-                                            
+            print name
+            print str(value)
+            print unit                                
                     
          
         else:

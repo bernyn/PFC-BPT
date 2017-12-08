@@ -34,6 +34,12 @@ class SettitingSensorPanel(wx.Panel):
         self.list.InsertColumn(0, 'Name', width=140)
         self.list.InsertColumn(1, 'Command')
         self.list.InsertColumn(2, 'Units')
+        
+        sensors = self.getSensorsToDisplay(self.istart)
+        name =""
+        value= ""
+        unit= ""
+        
             
         for i,e in enumerate(self.sensors):     
             index = self.list.InsertStringItem(sys.maxint, e.name)

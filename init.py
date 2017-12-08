@@ -105,6 +105,12 @@ class OBDConnection(object):
     def get_supported_sensor_list(self):
         supported_sensor_list=[]
         
+    def get_dtc(self):
+        dtcs = []
+        if self.c:
+            dtcs = self.c.capture_dtc()
+        return dtcs
+        
     #===========================================================================
     # def record_data(self):
     #     text = ""
@@ -339,6 +345,7 @@ class PFCFrame(wx.Frame):
         self.connection = None
         self.sensors = []
         self.port = None
+        self.ecomode = False
         
         
         self.menubar = wx.MenuBar( 0 )
@@ -469,7 +476,7 @@ class PFCFrame(wx.Frame):
             autodtc = self.cfg.ReadInt('autodtc')
             
             if autodtc == 1:
-                self.timerDTC.Start(refreshtime*1000) 
+                self.timerDTC.Start(refreshtime*10000) 
             else:
                 self.timerDTC.Stop()  
         else:        
@@ -498,6 +505,8 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.settingalarmpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        self.sensors, self.port = self.getvalues()
+        self.settingalarmpanel.setSensors(self.sensors)
         self.settingalarmpanel.showAlarmPPanel()
         self.settingalarmpanel.SetFocus()
         self.Layout()
@@ -519,15 +528,24 @@ class PFCFrame(wx.Frame):
     def OnEcoMode(self, event):        
         if self.menuEcoMode.IsChecked():
             self.statusbar.SetStatusText('Eco Mode On')
-            self.modenumericalpanel.setEcoMode(True)
-            self.modegraphicalpanel.setEcoMode(True)
-            self.modelistpanel.setEcoMode(True)        
+            self.ecomode = True
+            
+            if self.modenumericalpanel: 
+                self.modenumericalpanel.setEcoMode(True)
+            if self.modegraphicalpanel:
+                self.modegraphicalpanel.setEcoMode(True)
+            if self.modelistpanel:
+                self.modelistpanel.setEcoMode(True)        
         else:
             self.statusbar.SetStatusText('Eco Mode Off')
             self.menuEcoMode.SetBitmap( wx.Bitmap( u"./icons/Heart-gray-icon.png", wx.BITMAP_TYPE_ANY ) ) 
-            self.modenumericalpanel.setEcoMode(False)
-            self.modegraphicalpanel.setEcoMode(False)
-            self.modelistpanel.setEcoMode(False)  
+            self.ecomode = False
+            if self.modenumericalpanel: 
+                self.modenumericalpanel.setEcoMode(False)
+            if self.modegraphicalpanel:
+                self.modegraphicalpanel.setEcoMode(False)
+            if self.modelistpanel:
+                self.modelistpanel.setEcoMode(False)   
         
     def update(self,event):
         self.path= os.path.dirname(__file__)
@@ -579,6 +597,7 @@ class PFCFrame(wx.Frame):
         self.sensors, self.port = self.getvalues()
         self.modenumericalpanel.setPort(self.port)
         self.modenumericalpanel.setSensors(self.sensors)
+        self.modegraphicalpanel.setEcoMode(self.ecomode)
         self.modenumericalpanel.showModeNumericalPanel()
         self.modenumericalpanel.ShowSensors()
         self.modenumericalpanel.SetFocus()
@@ -627,6 +646,8 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.settingrecordpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        self.sensors, self.port = self.getvalues()
+        self.settingrecordpanel.setSensors(self.sensors)
         self.settingrecordpanel.showSettingRecordPanel()
         self.settingrecordpanel.SetFocus()
         self.Layout()
@@ -639,8 +660,8 @@ class PFCFrame(wx.Frame):
         self.sizer.Add(self.dtcpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
         self.port = self.getport()
-        print 'port on dtc'
-        print self.port  
+        getclass = self.getClass() 
+        self.dtcpanel.setClass(getclass)
         self.dtcpanel.setPort(self.port)
         self.dtcpanel.showDTCsPanel()
         self.dtcpanel.SetFocus()
@@ -659,6 +680,7 @@ class PFCFrame(wx.Frame):
         print self.port  
         self.modegraphicalpanel.setPort(self.port)
         self.modegraphicalpanel.setSensors(self.sensors)
+        self.modegraphicalpanel.setEcoMode(self.ecomode)
         self.modegraphicalpanel.showGraphicalPanel()
         self.modegraphicalpanel.ShowSensors()
         self.modegraphicalpanel.SetFocus()
@@ -678,6 +700,7 @@ class PFCFrame(wx.Frame):
         print self.port  
         self.modenumericalpanel.setPort(self.port)
         self.modenumericalpanel.setSensors(self.sensors)
+        self.modenumericalpanel.setEcoMode(self.ecomode)
         self.modenumericalpanel.showModeNumericalPanel()
         self.modenumericalpanel.ShowSensors()
         self.modenumericalpanel.SetFocus()
@@ -695,6 +718,7 @@ class PFCFrame(wx.Frame):
         print 'port on list'
         print self.port  
         self.modelistpanel.setPort(self.port)
+        self.modelistpanel.setEcoMode(self.ecomode)
         self.modelistpanel.showModeListPanel()
         self.modelistpanel.ShowSensors()
         self.modelistpanel.SetFocus()
@@ -749,7 +773,7 @@ class PFCFrame(wx.Frame):
     def UpdateDTC(self,event):
         print 'DTC timer'
         getclass = self.getClass() 
-        self.DTCCodes = getclass.capture_dtc()
+        self.DTCCodes = getclass.get_dtc()
         if self.DTCCodes : 
             wx.MessageBox('List of DTCs' + str(self.DTCCodes), 'DTC Codes', wx.OK | wx.ICON_INFORMATION)
                

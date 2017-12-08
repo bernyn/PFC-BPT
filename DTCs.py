@@ -126,6 +126,9 @@ class DTCsPanel( wx.Panel ):
         
     def getPort(self):
         return self.port
+    
+    def setClass(self, capture):
+        self.getclass = capture
         
     
     def __del__( self ):
@@ -140,19 +143,22 @@ class DTCsPanel( wx.Panel ):
         self.dtcText.AppendText(('Conf saved on ')+ datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
     def OnReadDTC( self, event ):    
-        self.DTCCodes = self.capture.capture_dtc()
-        print self.DTCCodes
-        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
-
+        capture = self.getClass
+        self.DTCCodes = capture.get_dtc()
+        if self.DTCCodes : 
+            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
    
     def OnReadDTCF( self, event ):
-        self.DTCCodes = self.capture.capture_dtc()
-        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
+        capture = self.getClass
+        self.DTCCodes = capture.get_dtc()
+        if self.DTCCodes : 
+            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
     
     def OnClearDTC( self, event ):
-        self.DTCCodes = self.capture.clear_dtc()
-        print self.DTCCodes
-        self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
+        capture = self.getClass
+        self.result = capture.clear_dtc()
+        if self.DTCCodes : 
+            self.dtcText.AppendText('DTCs Cleared' + str(self.result))
         
     
     def OnSerialBack( self, event ):
