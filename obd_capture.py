@@ -34,6 +34,8 @@ class OBD_Capture():
         return self.port
         
     def getSupportedSensorList(self):
+        print "getsuppsenslist"
+        print self.supportedSensorList 
         return self.supportedSensorList 
     
     def getUnSupportedSensorList(self):
@@ -71,7 +73,7 @@ class OBD_Capture():
          
         line = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')+ ";"  +"index" + ";"+ "name"+ "\n"
       
-        for supportedSensor in self.unsupportedSensor:
+        for supportedSensor in self.supportedSensorList:
             sensorIndex = supportedSensor[0]
             (name, value, unit) = self.port.sensor(sensorIndex)
             line += name + ";" + str(value) + ";" + str(unit) + "\n"
@@ -87,7 +89,7 @@ class OBD_Capture():
     
     def capture_dtc(self):
         self.DTCCodes=[]
-        self.DTCCodes = self.port.get_dtc()
+        self.DTCCodes = self.port.get_dtc() 
         print self.DTCCodes
         return self.DTCCodes
         

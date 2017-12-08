@@ -76,6 +76,8 @@ class OBDConnection(object):
 
     def get_output(self):
         if self.c and self.c.is_connected():
+            print "get output"
+            print self.c.record()
             return self.c.record()
         return ""
 
@@ -92,31 +94,35 @@ class OBDConnection(object):
                     pass
         return None
     
-    def get_sensors_list(self):
-        sensor_list = []
+    def get_sensors(self):
+        sensors = []
         if self.c:
-            sensor_list = self.c.getSupportedSensorList()
-        return sensor_list
+            sensors = self.c.getSupportedSensorList()
+        print "get sensors"
+        print sensors
+        return sensors
 
     def get_supported_sensor_list(self):
         supported_sensor_list=[]
         
-    def record_data(self):
-        text = ""
-        supported_sensor_list= self.get_supported_sensor_list()
-               
-        if(self.port is None):
-            return None
-              
-        line=""
-        line = time.strftime("%x") + ";" + time.strftime("%X")+ ";"
-      
-        for supportedSensor in supported_sensor_list:
-            sensorIndex = supportedSensor[0]
-            (name, value, unit) = self.port.sensor(sensorIndex)
-            line += name + ";" + str(value) + ";" + str(unit) + "\n"
-        self.write_record(line)
-        return line
+    #===========================================================================
+    # def record_data(self):
+    #     text = ""
+    #     supported_sensor_list= self.get_supported_sensor_list()
+    #            
+    #     if(self.port is None):
+    #         return None
+    #           
+    #     line=""
+    #     line = time.strftime("%x") + ";" + time.strftime("%X")+ ";"
+    #   
+    #     for supportedSensor in supported_sensor_list:
+    #         sensorIndex = supportedSensor[0]
+    #         (name, value, unit) = self.port.sensor(sensorIndex)
+    #         line += name + ";" + str(value) + ";" + str(unit) + "\n"
+    #     self.write_record(line)
+    #     return line
+    #===========================================================================
 
     def createRecordFile(self):
         self.path= os.path.dirname(__file__)
@@ -272,9 +278,9 @@ class OBDLoadingPanel(wx.Panel):
             if port_name:
                 self.textCtrl.AddText(" Failed Connection: " + port_name +"\n")
                 self.textCtrl.AddText(" Please hold alt & esc to view terminal.")
-            #self.textCtrl.AddText(str(self.c.get_output()))
+            self.textCtrl.AddText(str(self.c.get_output()))
             #print str(self.c.get_output()) 
-            self.sensors = self.c.get_sensors_list()
+            self.sensors = self.c.get_sensors()
             self.port = self.c.get_port()
             print 'sensor and port'
             print self.sensors
@@ -289,11 +295,13 @@ class OBDLoadingPanel(wx.Panel):
     def getPort(self):
         return self.port
 
-    def getSupportedSensorList(self):
-        return self.supported_list
-    
-    def getUnSupportedSensorList(self):
-        return self.unsupported_list
+    #===========================================================================
+    # def getSupportedSensorList(self):
+    #     return self.supported_list
+    # 
+    # def getUnSupportedSensorList(self):
+    #     return self.unsupported_list
+    #===========================================================================
 
     def getClass(self):
         return self.c
