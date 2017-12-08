@@ -35,12 +35,35 @@ class SettitingSensorPanel(wx.Panel):
         self.list.InsertColumn(1, 'Command')
         self.list.InsertColumn(2, 'Units')
         
-        sensors = self.getSensorsToDisplay(self.istart)
-        name =""
-        value= ""
-        unit= ""
-        
-            
+#===============================================================================
+#         sensors = self.getSensorsToDisplay(self.istart)
+#         name =""
+#         value= ""
+#         unit= ""
+#         
+#             
+#         for i,e in enumerate(self.sensors):     
+#             index = self.list.InsertStringItem(sys.maxint, e.name)
+#             self.list.SetStringItem(index, 1, e.cmd)
+#             self.list.SetStringItem(index, 2, e.unit)
+#         
+# 
+#         self.cfg = wx.Config('sensorsettings')
+#       
+#         num = self.list.GetItemCount()
+#         sensorlist = []
+#         for i in range(num):
+#             sensorlist.append(False)
+#         if self.cfg.Exists('Supported PIDs'):             
+#             for i in range(num):
+#                 self.list.CheckItem(i,self.cfg.ReadBool(self.list.GetItemText(i)))
+#                 if self.cfg.ReadBool(self.list.GetItemText(i))==True: 
+#                     print ('i= '+ str(i) + 'Sensor ' + self.list.GetItemText(i) + ' value= '+ str(self.cfg.ReadBool(self.list.GetItemText(i))))                          
+#         else:
+#             for i in range(num):
+#                 self.list.CheckItem(i,False)
+#===============================================================================
+
         for i,e in enumerate(self.sensors):     
             index = self.list.InsertStringItem(sys.maxint, e.name)
             self.list.SetStringItem(index, 1, e.cmd)
@@ -54,6 +77,7 @@ class SettitingSensorPanel(wx.Panel):
         for i in range(num):
             sensorlist.append(False)
         if self.cfg.Exists('Supported PIDs'):             
+           # print ("confg load")
             for i in range(num):
                 self.list.CheckItem(i,self.cfg.ReadBool(self.list.GetItemText(i)))
                 if self.cfg.ReadBool(self.list.GetItemText(i))==True: 

@@ -179,6 +179,10 @@ class ModeNumericalPanel(wx.Panel):
     		print 'sensor in box'
             
             
+            self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.sensorName.Wrap( -1 )
+            staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
             self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorData.Wrap( -1 )
             self.sensorData.SetFont( wx.Font(18, wx.DECORATIVE, wx.ITALIC, wx.NORMAL)) 
@@ -188,9 +192,7 @@ class ModeNumericalPanel(wx.Panel):
             self.sensorUnit.Wrap( -1 )
             staticBox.Add( self.sensorUnit, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
             
-            self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
-            self.sensorName.Wrap( -1 )
-            staticBox.Add( self.sensorName, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            
             
             
             
@@ -227,7 +229,6 @@ class ModeNumericalPanel(wx.Panel):
             
             if type(value)==float:  
                 value = str("%.2f"%round(value, 3))  
-                print ('Value Refresh= ' + str(value))
                 self.sensorData.SetLabel(str(value))
             else:
                 self.sensorData.SetLabel(str(value))    
@@ -238,9 +239,13 @@ class ModeNumericalPanel(wx.Panel):
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
             
-            if name == "Engine RPM" : self.rpm = value
+            if name == "Engine RPM" : 
+                print ("save rpm"+ str(value))
+                self.rpm = value
             
-            if name == "Vehicle Speed" : self.speed =value
+            if name == "Vehicle Speed" : 
+                print ("save speed"+ str(value))
+                self.speed =value
             self.checkAlarm(name, value, unit)       
          
             itext += 1
@@ -405,11 +410,12 @@ class ModeNumericalPanel(wx.Panel):
             self.alarm5mins, self.alarm5minval, self.alarm5Maxs,self.alarm5Maxval = self.cfg.ReadInt('alarm5minstatus'), self.cfg.ReadInt('alarm5minvalue'),self.cfg.ReadInt('alarm5Maxstatus'), self.cfg.ReadInt('alarm5Maxvalue')
             self.alarm1t, self.alarm2t, self.alarm3t, self.alarm4t, self.alarm5t = self.cfg.Read('alarm1'), self.cfg.Read('alarm2'), self.cfg.Read('alarm3'), self.cfg.Read('alarm4'), self.cfg.Read('alarm5')
         else:
-            self.cfg.Write("alarm1","No alarm")
-            self.cfg.WriteInt("alarm1minstatus", 0)
-            self.cfg.WriteInt("alarm1minvalue", 0)
-            self.cfg.WriteInt("alarm1Maxstatus", 0)
-            self.cfg.WriteInt("alarm1Maxvalue", 0)
+             
+            self.cfg.Write("alarm1","Vehicle Speed")
+            self.cfg.WriteInt("alarm1minstatus", 1)
+            self.cfg.WriteInt("alarm1minvalue", 10)
+            self.cfg.WriteInt("alarm1Maxstatus", 1)
+            self.cfg.WriteInt("alarm1Maxvalue", 90)
             self.cfg.Write("alarm2","No alarm")
             self.cfg.WriteInt("alarm2minstatus", 0)
             self.cfg.WriteInt("alarm2minvalue", 0)
@@ -432,8 +438,9 @@ class ModeNumericalPanel(wx.Panel):
             self.cfg.WriteInt("alarm5Maxvalue", 0)
    
     def checkECOMode(self, event):
-        print "on test"
+        print "on check eco"
         gear= self.get_gear(self.speed,self.rpm)
+        print str(gear)
         if gear < 5 and self.rpm < RECOMMENDED_RPM:
             self.winup = PopupUP(self.GetTopLevelParent(),  wx.SIMPLE_BORDER)
             btn = event.GetEventObject()

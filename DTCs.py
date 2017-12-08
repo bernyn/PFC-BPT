@@ -128,7 +128,7 @@ class DTCsPanel( wx.Panel ):
         return self.port
     
     def setClass(self, capture):
-        self.getclass = capture
+        self.getClass = capture
         
     
     def __del__( self ):
@@ -146,19 +146,19 @@ class DTCsPanel( wx.Panel ):
         capture = self.getClass
         self.DTCCodes = capture.get_dtc()
         if self.DTCCodes : 
-            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
+            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes)+ "\n")
    
     def OnReadDTCF( self, event ):
         capture = self.getClass
         self.DTCCodes = capture.get_dtc()
         if self.DTCCodes : 
-            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes))
+            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes)+"\n")
     
     def OnClearDTC( self, event ):
         capture = self.getClass
         self.result = capture.clear_dtc()
         if self.DTCCodes : 
-            self.dtcText.AppendText('DTCs Cleared' + str(self.result))
+            self.dtcText.AppendText('DTCs Cleared' + str(self.result)+"\n")
         
     
     def OnSerialBack( self, event ):

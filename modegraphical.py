@@ -56,6 +56,8 @@ class ModeGraphicalPanel ( wx.Panel ):
         else:
             for i in enumerate(num):
                 print "no config"
+        self.displayKmh = True
+        self.displayRPM = True
         
     def setEcoMode (self,eco):
         return self.ecomode
@@ -222,9 +224,7 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.SetSizer(mainSizer)
         mainSizer.Layout()
 
-         # Handle events for mouse clicks
-        self.Bind(wx.EVT_LEFT_DOWN, self.onLeft)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.onRight)
+
     
     def  addDisplayKmh(self, event,panelkmh):  
         # Panel 1 Km/h SpeedMeter        
@@ -480,34 +480,7 @@ class ModeGraphicalPanel ( wx.Panel ):
                 print name
                 print str(value)
                 print (unit)
-    def onCtrlC(self, event):
-        self.GetParent().Close()  
     
-    def onLeft(self, event):
-        """
-        Get data from 1 previous sensor in the list.
-        """
-        istart = self.istart + 1
-        if istart<len(self.sensors):
-            self.istart = istart
-            self.ShowSensors()
-        else: 
-            istart = self.istart - 31 
-            self.istart = istart 
-            self.ShowSensors() 
-                
-    def onRight(self, event):
-        """
-        Get data from 1 next sensor in the list.
-        """
-        istart = self.istart + 1
-        if istart<len(self.sensors):
-            self.istart = istart
-            self.ShowSensors()
-        else: 
-            istart = self.istart - 31 
-            self.istart = istart 
-            self.ShowSensors()  
     
     def __del__( self ):
         pass

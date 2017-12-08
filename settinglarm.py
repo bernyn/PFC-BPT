@@ -45,7 +45,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         self.cfg2 = wx.Config('sensorsettings')
         self.Choices=[]
         if self.cfg2.Exists('Supported PIDs'):                         
-            for i, e in enumerate(self.sensors):             
+            for i, e in enumerate(obd_sensors.SENSORS):             
                 if self.cfg2.ReadBool(e.name)==True:
                     self.Choices.append(e.name)
                     

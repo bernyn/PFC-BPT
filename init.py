@@ -110,6 +110,11 @@ class OBDConnection(object):
         if self.c:
             dtcs = self.c.capture_dtc()
         return dtcs
+    def clear_dtc(self):
+        result = []
+        if self.c:
+            result = self.c.clear_dtc()
+        return result
         
     #===========================================================================
     # def record_data(self):
