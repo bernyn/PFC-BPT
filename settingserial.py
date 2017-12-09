@@ -23,8 +23,8 @@ class SettingSerialPanel( wx.Panel ):
     def showSerialPanel(self):            
         #init
         self.cfg = wx.Config('serialsettings')
-        if self.cfg.Exists('port'): #port baudrate databits parity stop bits
-            port, baudrate, databits = self.cfg.ReadInt('port'), self.cfg.ReadInt('baudrate'), self.cfg.ReadInt('databits')
+        if self.cfg.Exists('portnames'): #port baudrate databits parity stop bits
+            portnames, baudrate, databits = self.cfg.ReadInt('port'), self.cfg.ReadInt('baudrate'), self.cfg.ReadInt('databits')
             parity, stopbits = self.cfg.ReadInt('parity'), self.cfg.ReadInt('stopbits')
  
         else:
@@ -52,7 +52,7 @@ class SettingSerialPanel( wx.Panel ):
         
         #comPortConfChoices = [portnames]
         self.comPortConf = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, portnames, 0 )
-        self.comPortConf.SetSelection( port )
+        self.comPortConf.SetSelection( portnames )
         self.comPortConf.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         
         gSizer1.Add( self.comPortConf, 0, wx.ALL, 0 )
@@ -160,7 +160,7 @@ class SettingSerialPanel( wx.Panel ):
         parityconf= self.parityConf.GetSelection()     
         stopbitsconf= self.stopBitsConf.GetSelection()
 
-        self.cfg.WriteInt("port", portconf)
+        self.cfg.WriteInt("portnames", portconf)
         self.cfg.WriteInt("baudrate", baudconf)
         self.cfg.WriteInt("databits", databitsconf)
         self.cfg.WriteInt("parity", parityconf)

@@ -5,12 +5,14 @@ from pylab import plotfile, show, gca
 #from init import PFCFrame
 import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+import wx.lib.agw.pybusyinfo as PBI
 
 import matplotlib.cbook as cbook
 import obd_sensors
 
 from datetime import datetime
 import time
+
 
 RECOMMENDED_RPM = 2000
 
@@ -75,10 +77,10 @@ class ModeNumericalPanel(wx.Panel):
         self.alarm4mins, self.alarm4minval, self.alarm4Maxs,self.alarm4Maxval = [0]*4   
         self.alarm5mins, self.alarm5minval, self.alarm5Maxs,self.alarm5Maxval = [0]*4   
         self.alarm1t, self.alarm2t, self.alarm3t = "No alarm","No alarm","No alarm"
-        self.alarm4t, self.alarm5t, self.alarm6t = "No alarm","No alarm","No alarm" 
+        self.alarm4t, self.alarm5t= "No alarm","No alarm"
         
-        self.alarm1max,self.alarm2max,self.alarm3max,self.alarm4max,self.alarm5max,self.alarm6max, = [0]*6
-        self.alarm1min,self.alarm2min,self.alarm3min,self.alarm4min,self.alarm5min,self.alarm6min, = [0]*6
+        self.alarm1max,self.alarm2max,self.alarm3max,self.alarm4max,self.alarm5max, = [0]*5
+        self.alarm1min,self.alarm2min,self.alarm3min,self.alarm4min,self.alarm5min, = [0]*5
         
         # Port 
         self.port = None
@@ -190,7 +192,7 @@ class ModeNumericalPanel(wx.Panel):
             
             self.sensorUnit = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(unit), wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorUnit.Wrap( -1 )
-            staticBox.Add( self.sensorUnit, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            staticBox.Add( self.sensorUnit, 0, wx.ALL|wx.ALIGN_CENTER, 5 )
             
             
             
@@ -246,84 +248,54 @@ class ModeNumericalPanel(wx.Panel):
         #get speed    
         (name, value, unit) = self.port.sensor(13)
         self.speed =value            
-        print (name + str(value)+ unit)      
+              
                  
         (name, value, unit) = self.port.sensor(12) 
         self.rpm = value
-        print (name + str(value)+ unit)
+         
         
         if self.ecomode: 
             self.checkECOMode()
-            
     
+
     def checkAlarm(self,name, value, unit):
         if name == self.alarm1t: 
-            if self.alarm1mins == 1 and  float(value) < self.alarm1minval and self.alarm1min< 3:
-                wx.MessageBox('Alarm 1 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 1 Min ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm1min += 1          
-            if self.alarm1Maxs == 1 and  float(value) > self.alarm1Maxval and self.alarm1max < 3:
-                wx.MessageBox('Alarm 1 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 1 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm1max += 1
+            if self.alarm1mins == 1 and  float(value) < self.alarm1minval:
+                d = showalarm("Alarm 1 Min.:", name, str(value), str(unit))
+                time.sleep(1.5)
+            if self.alarm1Maxs == 1 and  float(value) > self.alarm1Maxval:
+                d = showalarm("Alarm 1 Max.:", name, str(value), str(unit))
+                time.sleep(1.5)
         if name == self.alarm2t: 
-            if self.alarm2mins == 1 and  float(value) < self.alarm2minval and self.alarm2min< 3:
-                wx.MessageBox('Alarm 2 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 2 Min ON', wx.OK | wx.ICON_EXCLAMATION)                
-                self.alarm2min += 1
-            if self.alarm2Maxs == 1 and  float(value) > self.alarm2Maxval and self.alarm2max < 3:
-                wx.MessageBox('Alarm 2 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 2 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm2max += 1
+            if self.alarm2mins == 1 and  float(value) < self.alarm2minval:
+                d = showalarm("Alarm 2 Min.:", name, str(value), str(unit))
+                time.sleep(1.5)
+            if self.alarm2Maxs == 1 and  float(value) > self.alarm2Maxval:
+                d = showalarm("Alarm 2 Max.:", name, str(value), str(unit))
+                time.sleep(1.5)
         if name == self.alarm3t: 
-            if self.alarm3mins == 1 and  float(value) < self.alarm3minval and self.alarm3min< 3:
-                wx.MessageBox('Alarm 3 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 3 Min ON', wx.OK | wx.ICON_EXCLAMATION)                
-                self.alarm3min += 1
-            if self.alarm3Maxs == 1 and  float(value) > self.alarm3Maxval and self.alarm3max < 3:
-                wx.MessageBox('Alarm 3 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 3 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm3max += 1
+            if self.alarm3mins == 1 and  float(value) < self.alarm3minval:
+                d = showalarm("Alarm 3 Min.:", name, str(value), str(unit))
+                time.sleep(1.5)
+            if self.alarm3Maxs == 1 and  float(value) > self.alarm3Maxval:
+                d = showalarm("Alarm 3 Max.:", name, str(value), str(unit))
+                time.sleep(1.5)
         if name == self.alarm4t: 
-            if self.alarm4mins == 1 and  float(value) < self.alarm4minval and self.alarm4min< 3:
-                wx.MessageBox('Alarm 4 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 4 Min ON', wx.OK | wx.ICON_EXCLAMATION)                
-                self.alarm4min += 1
-            if self.alarm4Maxs == 1 and  float(value) > self.alarm4Maxval and self.alarm4max < 3:
-                wx.MessageBox('Alarm 4 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 4 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm4max += 1
+            if self.alarm4mins == 1 and  float(value) < self.alarm4minval:
+                d = showalarm("Alarm 4 Min.:", name, str(value), str(unit))
+                time.sleep(1.5)
+            if self.alarm4Maxs == 1 and  float(value) > self.alarm4Maxval:
+                d = showalarm("Alarm 4 Max.:", name, str(value), str(unit))
+                time.sleep(1.5)
         if name == self.alarm5t: 
-            if self.alarm5mins == 1 and  float(value) < self.alarm5minval and self.alarm5min< 3:
-                wx.MessageBox('Alarm 5 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 5 Min ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm5min += 1
-            if self.alarm5Maxs == 1 and  float(value) > self.alarm5Maxval and self.alarm5max < 3:
-                wx.MessageBox('Alarm 5 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 5 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm5max += 1
-        if name == self.alarm6t: 
-            if self.alarm6mins == 1 and  float(value) < self.alarm6minval and self.alarm6min< 3:
-                wx.MessageBox('Alarm 6 Min.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 6 Min ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm6min += 1                 
-            if self.alarm6Maxs == 1 and  float(value) > self.alarm6Maxval and self.alarm6max < 3:
-                wx.MessageBox('Alarm 6 Max.: ' + name + " flagged  :"+ str(value)+ " "+ str(unit), 'Alarm 6 Max ON', wx.OK | wx.ICON_EXCLAMATION)
-                self.alarm6max += 1
-        if self.alarm1min>= 3:
-                self.alarm1min= 0
-        if self.alarm2min>= 3:
-                self.alarm2min= 0
-        if self.alarm3min>= 3:
-                self.alarm3min= 0
-        if self.alarm4min>= 3:
-                self.alarm4min= 0
-        if self.alarm5min>= 3:
-                self.alarm5min= 0
-        if self.alarm6min>= 3:
-                self.alarm6min= 0
-        if self.alarm1max>= 3:
-                self.alarm1max= 0
-        if self.alarm2max>= 3:
-                self.alarm2max= 0
-        if self.alarm3max>= 3:
-                self.alarm3max= 0
-        if self.alarm4max>= 3:
-                self.alarm4max= 0
-        if self.alarm5max>= 3:
-                self.alarm5max= 0
-        if self.alarm6max>= 3:
-                self.alarm6max= 0   
-    
+            if self.alarm5mins == 1 and  float(value) < self.alarm5minval:
+                d = showalarm("Alarm 5 Min.:", name, str(value), str(unit))
+                time.sleep(1.5)
+            if self.alarm5Maxs == 1 and  float(value) > self.alarm5Maxval:
+                d = showalarm("Alarm 5 Max.:", name, str(value), str(unit))
+                time.sleep(1.5)
+        
+
 
     
     
@@ -452,6 +424,10 @@ class ModeNumericalPanel(wx.Panel):
             self.winup.Show(True)
             self.timer = wx.Timer(self)
             self.Bind(wx.EVT_TIMER, self.onCloseUp, self.timer)
-            self.timer.Start(3000)
+            self.timer.Start(2000)
         
-
+def showalarm(alarm, name, value, unit):
+    msg = name + str(value)+ " "+ str(unit)
+    title = "Alarm "+ alarm + " flagged:"
+    d = PBI.PyBusyInfo(msg, title=title)
+    return d

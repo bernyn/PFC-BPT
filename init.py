@@ -489,11 +489,19 @@ class PFCFrame(wx.Frame):
             autodtc = self.cfg.ReadInt('autodtc')
             
             if autodtc == 1:
-                self.timerDTC.Start(refreshtime*10000) 
+                self.timerDTC.Start(refreshtime*1000) 
             else:
                 self.timerDTC.Stop()  
         else:        
             autodtc = 0
+            
+                
+        self.valuetoggle= False
+        if self.cfg.Exists('RecordMode'):
+            self.valuetoggle= self.cfg.ReadBool('RecordMode')   
+        
+        
+        
         #eventes
     def OnSensors(self,event):
         self.DestroyActivePanel()    
@@ -592,10 +600,12 @@ class PFCFrame(wx.Frame):
             print 'sending sensors and port'
             self.modenumericalpanel.setSensors(sensors)
             self.modenumericalpanel.setPort(port)
+            
             self.modegraphicalpanel.setSensors(sensors)
             self.modegraphicalpanel.setPort(port)
             self.modelistpanel.setSensors(sensors)
             self.modelistpanel.setPort(port)
+            self.modenumericalpanel.setRecord(self.record_file)
             self.setvalues(sensors, port)
             self.dtcpanel.setPort(port)
  
