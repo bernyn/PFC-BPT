@@ -92,6 +92,12 @@ class OBD_Capture():
         self.DTCCodes = self.port.get_dtc() 
         print self.DTCCodes
         return self.DTCCodes
+    
+    def capture_dtc_f(self):
+        self.DTCFCodes=[]
+        self.DTCFCodes = self.port.get_dtc_f() 
+        print self.DTCFCodes
+        return self.DTCFCodes
         
     def clear_dtc(self):
         self.result=self.port.clear_dtc()

@@ -147,19 +147,21 @@ class DTCsPanel( wx.Panel ):
         self.DTCCodes = capture.get_dtc()
         if self.DTCCodes : 
             self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes)+ "\n")
+        else: self.dtcText.AppendText('No current DTCs' + "\n")
    
     def OnReadDTCF( self, event ):
         capture = self.getClass
-        self.DTCCodes = capture.get_dtc()
-        if self.DTCCodes : 
-            self.dtcText.AppendText('List of DTCs' + str(self.DTCCodes)+"\n")
+        self.DTCFCodes = capture.get_dtc_f()
+        if self.DTCFCodes : 
+            self.dtcText.AppendText('List of DTCs' + str(self.DTCFCodes)+"\n")
+        else: self.dtcText.AppendText('No current Frozen DTCs' + "\n")    
     
     def OnClearDTC( self, event ):
         capture = self.getClass
         self.result = capture.clear_dtc()
         if self.DTCCodes : 
             self.dtcText.AppendText('DTCs Cleared' + str(self.result)+"\n")
-        
+        else: self.dtcText.AppendText('No DTCs to clear' + "\n")
     
     def OnSerialBack( self, event ):
         self.dtcText.Clear()

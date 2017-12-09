@@ -312,7 +312,17 @@ class OBDPort:
                 DTCStr=dtcLetters[(val&0xC000)>14]+str((val&0x3000)>>12)+str((val&0x0f00)>>8)+str((val&0x00f0)>>4)+str(val&0x000f)
                 
                 DTCCodes.append(["Active",DTCStr])
-          
+          return DTCCodes
+      
+    def get_dtc_f(self):
+          """Returns a list of all pending DTC codes. Each element consists of
+          a 2-tuple: (DTC code (string), Code description (string) )"""
+          dtcLetters = ["P", "C", "B", "U"]
+          r = self.sensor(1)[1] #data
+          dtcNumber = r[0]
+          mil = r[1]
+          DTCCodes = []  
+       
           #read mode 7
           self.send_command(GET_FREEZE_DTC_COMMAND)
           res = self.get_result()

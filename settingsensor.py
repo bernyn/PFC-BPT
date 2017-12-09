@@ -64,7 +64,7 @@ class SettitingSensorPanel(wx.Panel):
 #                 self.list.CheckItem(i,False)
 #===============================================================================
 
-        for i,e in enumerate(self.sensors):     
+        for i,e in enumerate(obd_sensors.SENSORS):     
             index = self.list.InsertStringItem(sys.maxint, e.name)
             self.list.SetStringItem(index, 1, e.cmd)
             self.list.SetStringItem(index, 2, e.unit)

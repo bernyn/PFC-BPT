@@ -239,16 +239,18 @@ class ModeNumericalPanel(wx.Panel):
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
             
-            if name == "Engine RPM" : 
-                print ("save rpm"+ str(value))
-                self.rpm = value
-            
-            if name == "Vehicle Speed" : 
-                print ("save speed"+ str(value))
-                self.speed =value
             self.checkAlarm(name, value, unit)       
          
             itext += 1
+        
+        #get speed    
+        (name, value, unit) = self.port.sensor(13)
+        self.speed =value            
+        print (name + str(value)+ unit)      
+                 
+        (name, value, unit) = self.port.sensor(12) 
+        self.rpm = value
+        print (name + str(value)+ unit)
         
         if self.ecomode: 
             self.checkECOMode()

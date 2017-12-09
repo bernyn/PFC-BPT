@@ -198,7 +198,7 @@ class SettingSerialPanel( wx.Panel ):
         self.parityConf.SetSelection(0)     
         self.stopBitsConf.SetSelection(0)
         
-    def scanSerial(self, event):
+    def scanSerial(self):
         ports = []
         for i in range(10):
           try:

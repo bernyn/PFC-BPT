@@ -270,6 +270,7 @@ class OBDLoadingPanel(wx.Panel):
         start_time = datetime.now()
         print(start_time)
         self.textCtrl.AddText(" Trying to connect ..." + time.asctime())
+        self.gif.Play()
         while not connected:
             connected = self.c.is_connected()
             #self.textCtrl.Clear()

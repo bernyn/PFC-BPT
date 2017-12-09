@@ -96,7 +96,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a1aM, 0, wx.ALL|wx.ALIGN_RIGHT, 5 )
         self.a1aM.SetValue(alarm1Maxs) 
         
-        self.a1SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a1SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a1SM.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a1SM.SetValue(alarm1Maxval) 
         
@@ -115,7 +115,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a2am, 0, wx.ALL, 5 )
         self.a2am.SetValue(alarm2mins) 
         
-        self.a2Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a2Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a2Sm.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a2Sm.SetValue(alarm2minval)
         
@@ -125,7 +125,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a2aM, 0, wx.ALL, 5 )
         self.a2aM.SetValue(alarm2Maxs) 
 
-        self.a2SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a2SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a2SM.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a2SM.SetValue(alarm2Maxval) 
 
@@ -143,7 +143,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a3am, 0, wx.ALL, 5 )
         self.a3am.SetValue(alarm3mins) 
         
-        self.a3Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a3Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a3Sm.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a3Sm.SetValue(alarm3minval)
         
@@ -153,7 +153,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a3aM, 0, wx.ALL, 5 )
         self.a3aM.SetValue(alarm3Maxs) 
 
-        self.a3SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a3SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a3SM.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a3SM.SetValue(alarm3Maxval) 
         
@@ -171,7 +171,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a4am, 0, wx.ALL, 5 )
         self.a4am.SetValue(alarm4mins) 
         
-        self.a4Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a4Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a4Sm.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a4Sm.SetValue(alarm4minval)
 
@@ -182,7 +182,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a4aM, 0, wx.ALL, 5 )
         self.a4aM.SetValue(alarm4Maxs) 
 
-        self.a4SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 6 )
+        self.a4SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 6 )
         self.a4SM.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a4SM.SetValue(alarm4Maxval) 
         
@@ -200,7 +200,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a5am, 0, wx.ALL, 5 )
         self.a5am.SetValue(alarm5mins) 
         
-        self.a5Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 0 )
+        self.a5Sm = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 0 )
         self.a5Sm.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a5Sm.SetValue(alarm5minval)
     
@@ -210,7 +210,7 @@ class SettingAlarmsPanel ( wx.Panel ):
         fgSizer1.Add( self.a5aM, 0, wx.ALL, 5 )
         self.a5aM.SetValue(alarm5Maxs) 
         
-        self.a5SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 20, 6 )
+        self.a5SM = wx.SpinCtrl( self.m_scrolledWindow1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 9999, 6 )
         self.a5SM.SetFont( wx.Font( 8, 74, 90, 90, False, "Calibri" ) )
         self.a5SM.SetValue(alarm5Maxval) 
         
