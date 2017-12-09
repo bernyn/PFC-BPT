@@ -30,7 +30,19 @@ class ModeListPanel(wx.Panel):
         self.rpm = 0
         self.speed = 0
         self.ecomode = False
-
+        
+        # Alarms
+        self.alarm1mins, self.alarm1minval, self.alarm1Maxs,self.alarm1Maxval = [0]*4 
+        self.alarm2mins, self.alarm2minval, self.alarm2Maxs,self.alarm2Maxval = [0]*4   
+        self.alarm3mins, self.alarm3minval, self.alarm3Maxs,self.alarm3Maxval = [0]*4   
+        self.alarm4mins, self.alarm4minval, self.alarm4Maxs,self.alarm4Maxval = [0]*4   
+        self.alarm5mins, self.alarm5minval, self.alarm5Maxs,self.alarm5Maxval = [0]*4   
+        self.alarm1t, self.alarm2t, self.alarm3t = "No alarm","No alarm","No alarm"
+        self.alarm4t, self.alarm5t, self.alarm6t = "No alarm","No alarm","No alarm" 
+        
+        self.alarm1max,self.alarm2max,self.alarm3max,self.alarm4max,self.alarm5max,self.alarm6max, = [0]*6
+        self.alarm1min,self.alarm2min,self.alarm3min,self.alarm4min,self.alarm5min,self.alarm6min, = [0]*6
+        
     def showModeListPanel(self):           
         
         bSizer2 = wx.BoxSizer( wx.VERTICAL )
@@ -114,40 +126,21 @@ class ModeListPanel(wx.Panel):
         self.cfg = wx.Config('sensorsettings')
         num = self.list.GetItemCount()
        
+        sensors = self.getSensorsToDisplay(self.istart)
         if self.cfg.Exists('Supported PIDs'):             
             print "creating list with conf"                
             for i,e in enumerate(obd_sensors.SENSORS):
                  
                 if self.cfg.ReadBool(e.name)==True:
+                    (name, value, unit) = self.port.sensor(i)
                     index = self.list.InsertStringItem(sys.maxint, e.name)
-                    self.list.SetStringItem(index, 1, e.value)
+                    if type(value)==float:  
+                        value = str("%.2f"%round(value, 3)) 
+                    self.list.SetStringItem(index, 1, str(value))#e.value)
                     self.list.SetStringItem(index, 2, e.unit)      
         
         print "end creating list with conf"    
         itext = 0
-        print "creating list with values" 
-        
-        sensors = self.getSensorsToDisplay(self.istart)
-        
-        for index, sensor in sensors:
-
-            (name, value, unit) = self.port.sensor(index)
-            index = self.list.InsertStringItem(sys.maxint, e.name)
-            self.list.SetStringItem(index, 2, e.unit) 
-            if type(value)==float:  
-                value = str("%.2f"%round(value, 3)) 
-                self.list.SetStringItem(index, 1, e.value)
-            if itext<len(self.texts):
-                #self.texts[itext*2].SetLabel(str(value))
-                self.list.SetStringItem(index, 1, e.value)
-            itext += 1 
-            print name
-            print str(value)
-            print unit                                
-                    
-         
-        else:
-            print'empty list'
 
         # Timer for update
         self.timer = wx.Timer(self)
@@ -158,51 +151,32 @@ class ModeListPanel(wx.Panel):
     def refresh(self, event):
         print "refreshing sensors"
         sensors = self.getSensorsToDisplay(self.istart)   
-        sensors = self.getSensorsToDisplay(self.istart)
         name =""
         value= ""
         unit= ""
-        print sensors 
         itext = 0
-        for index, sensor in sensors:
-            (name, value, unit) = self.port.sensor(index)
-            if type(value)==float:  
-                value = str("%.2f"%round(value, 3)) 
-              
-            if itext<len(self.texts):
-                self.texts[itext*2].SetLabel(str(value))
-            
-            itext += 1 
-            print (name+ '=' +value +' ' +unit)                    
-        print "finish refresh"
-        itext = 0
+        for i,e in enumerate(obd_sensors.SENSORS): 
+            if self.cfg.ReadBool(e.name)==True:
+                (name, value, unit) = self.port.sensor(i)
+                index = self.list.SetStringItem(sys.maxint, e.name)
+                if type(value)==float:  
+                    value = str("%.2f"%round(value, 3)) 
+                self.list.SetStringItem(index, 1, str(value))#e.value)
+                self.list.SetStringItem(index, 2, e.unit)  
+                self.checkAlarm(name, value, unit)      
         
-        print "refreshing list with values" 
-        for index, sensor in sensors:
-
-            (name, value, unit) = self.port.sensor(index)
-            index = self.list.InsertStringItem(sys.maxint, name)
-            self.list.SetStringItem(index, 2, unit) 
-            if type(value)==float:  
-                value = str("%.2f"%round(value, 3)) 
-                self.list.SetStringItem(index, 1, value)
-            if itext<len(self.texts):
-                #self.texts[itext*2].SetLabel(str(value))
-                self.list.SetStringItem(index, 1, value)
-            itext += 1 
-           
-            self.checkAlarm(name, value, unit)       
-         
-           
+        print "finish refreshing list" 
+                 
+          
         
         #get speed    
         (name, value, unit) = self.port.sensor(13)
         self.speed =value            
-        print (name + str(value)+ unit)      
+       # print (name + str(value)+ unit)      
                  
         (name, value, unit) = self.port.sensor(12) 
         self.rpm = value
-        print (name + str(value)+ unit)
+        #print (name + str(value)+ unit)
         
         if self.ecomode: 
             self.checkECOMode()

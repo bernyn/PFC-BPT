@@ -39,17 +39,32 @@ class ModeGraphicalPanel ( wx.Panel ):
         self.speed = 0
         self.ecomode = False
         
+        # Alarms
+        self.alarm1mins, self.alarm1minval, self.alarm1Maxs,self.alarm1Maxval = [0]*4 
+        self.alarm2mins, self.alarm2minval, self.alarm2Maxs,self.alarm2Maxval = [0]*4   
+        self.alarm3mins, self.alarm3minval, self.alarm3Maxs,self.alarm3Maxval = [0]*4   
+        self.alarm4mins, self.alarm4minval, self.alarm4Maxs,self.alarm4Maxval = [0]*4   
+        self.alarm5mins, self.alarm5minval, self.alarm5Maxs,self.alarm5Maxval = [0]*4   
+        self.alarm1t, self.alarm2t, self.alarm3t = "No alarm","No alarm","No alarm"
+        self.alarm4t, self.alarm5t, self.alarm6t = "No alarm","No alarm","No alarm" 
+        
+        self.alarm1max,self.alarm2max,self.alarm3max,self.alarm4max,self.alarm5max,self.alarm6max, = [0]*6
+        self.alarm1min,self.alarm2min,self.alarm3min,self.alarm4min,self.alarm5min,self.alarm6min, = [0]*6
+        
         self.cfg = wx.Config('sensorsettings')
         num = enumerate(obd_sensors.SENSORS) 
         sensorlist = []
         
         if self.cfg.Exists('Supported PIDs'):             
             self.displayKmh = self.cfg.ReadBool('           Vehicle Speed')
+            print self.displayKmh
             self.displayRPM = self.cfg.ReadBool('              Engine RPM')
+            print self.displayRPM
             self.displayCoolant = self.cfg.ReadBool('     Coolant Temp')
             self.displayIntake = self.cfg.ReadBool('         Intake Air Temp')
             self.displayLoad = self.cfg.ReadBool('   Calculated Load Value')
             self.displayMAF = self.cfg.ReadBool('     Air Flow Rate (MAF)')
+            print self.displayMAF
                     
            
                                              
@@ -479,11 +494,11 @@ class ModeGraphicalPanel ( wx.Panel ):
         #get speed    
         (name, value, unit) = self.port.sensor(13)
         self.speed =value            
-        print (name + str(value)+ unit)      
+        #print (name + str(value)+ unit)      
                  
         (name, value, unit) = self.port.sensor(12) 
         self.rpm = value
-        print (name + str(value)+ unit)
+        #print (name + str(value)+ unit)
         
         if self.ecomode: 
             self.checkECOMode()       

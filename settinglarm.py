@@ -221,13 +221,13 @@ class SettingAlarmsPanel ( wx.Panel ):
         
         bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
         
-        self.alarmsavebutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+        self.alarmsavebutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.Size( 70,-1 ), 0 )
         bSizer7.Add( self.alarmsavebutton, 0, wx.ALL, 5 )
         
-        self.alarmallbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Disable All", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+        self.alarmallbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Disable All", wx.DefaultPosition, wx.Size( 70,-1 ), 0 )
         bSizer7.Add( self.alarmallbutton, 0, wx.ALL, 5 )
         
-        self.alarmdefaultbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Default", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+        self.alarmdefaultbutton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Default", wx.DefaultPosition, wx.Size( 70,-1 ), 0 )
         bSizer7.Add( self.alarmdefaultbutton, 0, wx.ALL, 5 )
         
                

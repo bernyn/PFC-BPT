@@ -130,7 +130,9 @@ class RecordsPanel(wx.Panel):
         
         self.Centre( wx.BOTH )    
          
-
+    def setSensors(self, sensors):
+        self.sensors = sensors
+        
     def OnOpen(self,event):
         print 'openfile'
         

@@ -67,12 +67,12 @@ class SettingRecordPanel(wx.Panel):
      
         vbox2Settings = wx.BoxSizer(wx.VERTICAL)
  
-        selectall = wx.Button(leftPanel, -1, 'Select All', size=(65, -1))
-        deselect = wx.Button(leftPanel, -1, 'Deselect All', size=(65, -1))
-        save = wx.Button(leftPanel, -1, 'Save', size=(65, -1))
-        self.recrd= wx.ToggleButton(leftPanel, -1, 'Record', size=(65,-1))
+        selectall = wx.Button(leftPanel, -1, 'Select All', size=(70, -1))
+        deselect = wx.Button(leftPanel, -1, 'Deselect All', size=(70, -1))
+        save = wx.Button(leftPanel, -1, 'Save', size=(70, -1))
+        self.recrd= wx.ToggleButton(leftPanel, -1, 'Record', size=(70,-1))
         self.recrd.SetValue(valuetoggle)
-        # back= wx.Button(leftPanel, -1, 'Back', size=(65,-1))
+     
       
         self.Bind(wx.EVT_BUTTON, self.OnSelectAll, id=selectall.GetId())
         self.Bind(wx.EVT_BUTTON, self.OnDeselectAll, id=deselect.GetId())
