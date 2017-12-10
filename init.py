@@ -475,13 +475,10 @@ class PFCFrame(wx.Frame):
         self.modenumericalpanel = ModeNumericalPanel(self)
         
         if self.menuEcoMode.IsChecked():
-            self.modenumericalpanel.setEcoMode(True)
-            self.modegraphicalpanel.setEcoMode(True)
-            self.modelistpanel.setEcoMode(True)        
+            self.ecomode = True
+      
         else:
-            self.modenumericalpanel.setEcoMode(False)
-            self.modegraphicalpanel.setEcoMode(False)
-            self.modelistpanel.setEcoMode(False)  
+            self.ecomode = False  
 
         self.cfg = wx.Config('DTCs Settings')
         if self.cfg.Exists('refresh'): #port baudrate databits parity stop bits
@@ -495,11 +492,7 @@ class PFCFrame(wx.Frame):
         else:        
             autodtc = 0
             
-                
-        self.valuetoggle= False
-        if self.cfg.Exists('RecordMode'):
-            self.valuetoggle= self.cfg.ReadBool('RecordMode')   
-        
+                  
         
         
         #eventes
@@ -551,22 +544,11 @@ class PFCFrame(wx.Frame):
             self.statusbar.SetStatusText('Eco Mode On')
             self.ecomode = True
             
-            if self.modenumericalpanel: 
-                self.modenumericalpanel.setEcoMode(True)
-            if self.modegraphicalpanel:
-                self.modegraphicalpanel.setEcoMode(True)
-            if self.modelistpanel:
-                self.modelistpanel.setEcoMode(True)        
+      
         else:
             self.statusbar.SetStatusText('Eco Mode Off')
             self.menuEcoMode.SetBitmap( wx.Bitmap( u"./icons/Heart-gray-icon.png", wx.BITMAP_TYPE_ANY ) ) 
             self.ecomode = False
-            if self.modenumericalpanel: 
-                self.modenumericalpanel.setEcoMode(False)
-            if self.modegraphicalpanel:
-                self.modegraphicalpanel.setEcoMode(False)
-            if self.modelistpanel:
-                self.modelistpanel.setEcoMode(False)   
         
     def update(self,event):
         self.path= os.path.dirname(__file__)
@@ -605,6 +587,9 @@ class PFCFrame(wx.Frame):
             self.modegraphicalpanel.setPort(port)
             self.modelistpanel.setSensors(sensors)
             self.modelistpanel.setPort(port)
+            self.modenumericalpanel.setEcoMode(self.ecomode)
+            self.modegraphicalpanel.setEcoMode(self.ecomode)
+            self.modelistpanel.setEcoMode(self.ecomode)  
  
             self.modelistpanel.setRecordFile(self.record_file)
             self.setvalues(sensors, port)

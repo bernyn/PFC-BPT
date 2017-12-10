@@ -147,8 +147,7 @@ class ModeNumericalPanel(wx.Panel):
         """
         Display the sensors.
         """
-        print 'showsensors'
-        print self.port
+
         sensors = self.getSensorsToDisplay(self.istart)
         name =""
         value= ""
@@ -166,19 +165,16 @@ class ModeNumericalPanel(wx.Panel):
         
         # Create a box for each sensor
         for index, sensor in sensors:
-            print 'creating boxes'
+            
             (name, value, unit) = self.port.sensor(index)
             box = wx.StaticBox( self, -1, "Sensor" )
             self.boxes.append(box)
             self.boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
-            print ('Value= ' + str(value))
-            print ('name=' + str(name))
-            print ('unit=' + str(unit))
-            
+                        
             # Text for sensor value 
             if type(value)==float:  
                 value = str("%.2f"%round(value, 3))                    
-    		print 'sensor in box'
+    		
             
             
             self.sensorName = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, name, wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -187,8 +183,8 @@ class ModeNumericalPanel(wx.Panel):
             
             self.sensorData = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(value), wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorData.Wrap( -1 )
-            self.sensorData.SetFont( wx.Font(18, wx.DECORATIVE, wx.ITALIC, wx.NORMAL)) 
-            staticBox.Add( self.sensorData, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+            self.sensorData.SetFont( wx.Font(18, wx.DECORATIVE, wx.BOLD, wx.NORMAL)) 
+            staticBox.Add( self.sensorData, 0, wx.ALIGN_CENTER, 5 )
             
             self.sensorUnit = wx.StaticText( staticBox.GetStaticBox(), wx.ID_ANY, str(unit), wx.DefaultPosition, wx.DefaultSize, 0 )
             self.sensorUnit.Wrap( -1 )

@@ -14,6 +14,9 @@ import obd_sensors
 RECOMMENDED_RPM = 2000
 
  
+
+        
+        
      
 class ModeListPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
@@ -307,15 +310,15 @@ class ModeListPanel(wx.Panel):
         gear= self.get_gear(self.speed,self.rpm)
         print str(gear)
         if gear < 5 and self.rpm < RECOMMENDED_RPM:
-            self.winup = PopupUP(self.GetTopLevelParent(),  wx.SIMPLE_BORDER)
-            btn = event.GetEventObject()
-            pos = btn.ClientToScreen( (300,0) )
-            sz =  btn.GetSize()
-            self.winup.Position(pos, (0, sz[1]))
-            self.winup.Show(True)
-            self.timer = wx.Timer(self)
-            self.Bind(wx.EVT_TIMER, self.onCloseUp, self.timer)
-            self.timer.Start(3000)
+            message = "Please increase gear"
+            pngup = wx.Bitmap(u"./icons/Actions-arrow-up-icon.png", wx.BITMAP_TYPE_ANY ) 
+            d = PBI.PyBusyInfo(message, parent=None, title="ECO Mode on",
+                              icon=pngup)
+            wx.Yield()
+ 
+            wx.MilliSleep(1500)
+ 
+        del d
             
     
     def get_gear(self, speed, rpm):
@@ -344,3 +347,5 @@ def showalarm(alarm, name, value, unit):
     title = "Alarm "+ alarm + " flagged:"
     d = PBI.PyBusyInfo(msg, title=title)
     return d    
+
+

@@ -150,6 +150,9 @@ class SettingRecordPanel(wx.Panel):
             else:
                 self.cfg.WriteBool(self.list.GetItemText(i), False)    
                 #print ("guardado: sensorlist " + self.list.GetItemText(i)+ "False")
+        
+        valuetoggle= self.recrd.GetValue() 
+        self.cfg.WriteBool('RecordMode',valuetoggle)
             
     def OnActivate(self,event):      
         if (self.recrd.GetValue()):  self.cfg.WriteBool("RecordMode", True) 
