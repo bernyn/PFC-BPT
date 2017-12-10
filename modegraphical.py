@@ -417,7 +417,7 @@ class ModeGraphicalPanel ( wx.Panel ):
         if self.displayRPM:
             print 'get rpm'
             (name, value, unit) = self.port.sensor(12) 
-            self.GageRPM.SetSpeedValue(value)
+            self.GageRPM.SetSpeedValue(value/100)
             print (name + str(value)+ unit)
                    
         if self.displayLoad:

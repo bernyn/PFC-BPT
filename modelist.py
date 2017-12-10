@@ -83,7 +83,7 @@ class ModeListPanel(wx.Panel):
         
         self.Centre( wx.BOTH )
         
-        self.getRecords()
+        
     
     def setEcoMode (self,eco):
         return self.ecomode 
@@ -103,10 +103,10 @@ class ModeListPanel(wx.Panel):
     def getPort(self):
         return self.port
     
-    def setRecord(self, record):
+    def setRecordFile(self, record):
         self.record_file = record
     
-    def getRecord(self):
+    def getRecordFile(self):
         return self.record_file
 
     def getSensorsToDisplay(self, istart):
@@ -135,6 +135,7 @@ class ModeListPanel(wx.Panel):
         sensors = self.getSensorsToDisplay(self.istart)
         if self.cfg.Exists('Supported PIDs'):             
             print "creating list with conf"                
+            self.header = "Date; Time"
             for i,e in enumerate(obd_sensors.SENSORS):
                  
                 if self.cfg.ReadBool(e.name)==True:
@@ -144,7 +145,8 @@ class ModeListPanel(wx.Panel):
                         value = str("%.2f"%round(value, 3)) 
                     self.list.SetStringItem(index, 1, str(value))#e.value)
                     self.list.SetStringItem(index, 2, e.unit)      
-        
+                    self.header += (name+ ";")
+            self.header += ";"+ "\n"
         print "end creating list with conf"    
         itext = 0
 
@@ -161,8 +163,10 @@ class ModeListPanel(wx.Panel):
         value= ""
         unit= ""
         line=""
-        line = time.strftime("%x") + ";" + time.strftime("%X")+ ";"
+        date= time.strftime("%x") + ";" + time.strftime("%X")+ ";" 
+        line=date
         itext = 0
+        self.list.DeleteAllItems()
         for i,e in enumerate(obd_sensors.SENSORS): 
             if self.cfg.ReadBool(e.name)==True:
                 (name, value, unit) = self.port.sensor(i)
@@ -172,12 +176,19 @@ class ModeListPanel(wx.Panel):
                 self.list.SetStringItem(index, 1, str(value))#e.value)
                 self.list.SetStringItem(index, 2, e.unit)  
                 self.checkAlarm(name, value, unit)      
-                line += name + ";" + str(value) + ";" + str(unit) + "\n"
-        print ("Line in "+  self.getRecord())
-        print(line)
-        print "finish refreshing list" 
-                 
-          
+                line += date + name + ";" + str(value) + ";" + str(unit) + "\n"
+        
+        self.valuetoggle= False
+        if self.cfg.Exists('RecordMode'):
+            self.valuetoggle= self.cfg.ReadBool('RecordMode') 
+            if self.valuetoggle:
+                
+                self.recordfile = self.getRecordFile()
+                print ("Line in " + self.recordfile)
+                print(line)
+                print "finish refreshing list" 
+                self.write_record(self.recordfile, line)          
+        print(line)  
         
         #get speed    
         (name, value, unit) = self.port.sensor(13)
@@ -233,7 +244,7 @@ class ModeListPanel(wx.Panel):
                 d = showalarm("Alarm 5 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
 
-    def getRecords(self, event):
+    def getRecords(self):
         
        self.cfg = wx.Config('recordsettings')
        self.num = self.list.GetItemCount()

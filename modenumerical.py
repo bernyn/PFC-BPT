@@ -241,6 +241,9 @@ class ModeNumericalPanel(wx.Panel):
             if itext<len(self.texts):
                 self.texts[itext*2].SetLabel(str(value))
             
+            if index != 0 :
+                self.sensorName.SetLabel("       "+str(name))
+                
             self.checkAlarm(name, value, unit)       
          
             itext += 1
@@ -260,40 +263,50 @@ class ModeNumericalPanel(wx.Panel):
 
     def checkAlarm(self,name, value, unit):
         if name == self.alarm1t: 
-            if self.alarm1mins == 1 and  float(value) < self.alarm1minval:
+            if self.alarm1mins == 1 and  float(value) < self.alarm1minval and self.alarm1min< 3:
                 d = showalarm("Alarm 1 Min.:", name, str(value), str(unit))
                 time.sleep(1.5)
-            if self.alarm1Maxs == 1 and  float(value) > self.alarm1Maxval:
+                self.alarm1min += 1 
+            if self.alarm1Maxs == 1 and  float(value) > self.alarm1Maxval and self.alarm1max< 3:
                 d = showalarm("Alarm 1 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
+                self.alarm1max += 1
         if name == self.alarm2t: 
-            if self.alarm2mins == 1 and  float(value) < self.alarm2minval:
+            if self.alarm2mins == 1 and  float(value) < self.alarm2minval and self.alarm2min< 3:
                 d = showalarm("Alarm 2 Min.:", name, str(value), str(unit))
                 time.sleep(1.5)
-            if self.alarm2Maxs == 1 and  float(value) > self.alarm2Maxval:
+                self.alarm2min += 1 
+            if self.alarm2Maxs == 1 and  float(value) > self.alarm2Maxval and self.alarm2max< 3:
                 d = showalarm("Alarm 2 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
+                self.alarm2max += 1
         if name == self.alarm3t: 
-            if self.alarm3mins == 1 and  float(value) < self.alarm3minval:
+            if self.alarm3mins == 1 and  float(value) < self.alarm3minval and self.alarm3min< 3:
                 d = showalarm("Alarm 3 Min.:", name, str(value), str(unit))
                 time.sleep(1.5)
-            if self.alarm3Maxs == 1 and  float(value) > self.alarm3Maxval:
+                self.alarm3min += 1 
+            if self.alarm3Maxs == 1 and  float(value) > self.alarm3Maxval and self.alarm3max< 3:
                 d = showalarm("Alarm 3 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
+                self.alarm3max += 1
         if name == self.alarm4t: 
-            if self.alarm4mins == 1 and  float(value) < self.alarm4minval:
+            if self.alarm4mins == 1 and  float(value) < self.alarm4minval and self.alarm4min< 3:
                 d = showalarm("Alarm 4 Min.:", name, str(value), str(unit))
                 time.sleep(1.5)
-            if self.alarm4Maxs == 1 and  float(value) > self.alarm4Maxval:
+                self.alarm4min += 1 
+            if self.alarm4Maxs == 1 and  float(value) > self.alarm4Maxval and self.alarm4max< 3:
                 d = showalarm("Alarm 4 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
+                self.alarm4max += 1
         if name == self.alarm5t: 
-            if self.alarm5mins == 1 and  float(value) < self.alarm5minval:
+            if self.alarm5mins == 1 and  float(value) < self.alarm5minval and self.alarm5min< 3:
                 d = showalarm("Alarm 5 Min.:", name, str(value), str(unit))
                 time.sleep(1.5)
-            if self.alarm5Maxs == 1 and  float(value) > self.alarm5Maxval:
+                self.alarm5min += 1 
+            if self.alarm5Maxs == 1 and  float(value) > self.alarm5Maxval and self.alarm5max< 3:
                 d = showalarm("Alarm 5 Max.:", name, str(value), str(unit))
                 time.sleep(1.5)
+                self.alarm5max += 1
         
 
 

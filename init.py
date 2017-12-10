@@ -572,7 +572,7 @@ class PFCFrame(wx.Frame):
         self.path= os.path.dirname(__file__)
         self.record_path = os.path.join(self.path, 'recrods/')
         self.filedate = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')       
-        self.record_file = "records-" +self.filedate +".csv"
+        self.record_file = "records-" +self.filedate +".csv" + "\n"
         f = open(self.record_file, 'w')
         f.close()
         
@@ -605,7 +605,8 @@ class PFCFrame(wx.Frame):
             self.modegraphicalpanel.setPort(port)
             self.modelistpanel.setSensors(sensors)
             self.modelistpanel.setPort(port)
-            self.modenumericalpanel.setRecord(self.record_file)
+ 
+            self.modelistpanel.setRecordFile(self.record_file)
             self.setvalues(sensors, port)
             self.dtcpanel.setPort(port)
  
@@ -669,6 +670,7 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.settingrecordpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
+        
         self.sensors, self.port = self.getvalues()
         self.settingrecordpanel.setSensors(self.sensors)
         self.settingrecordpanel.showSettingRecordPanel()
@@ -698,9 +700,7 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.modegraphicalpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
-        self.sensors, self.port = self.getvalues()
-        print 'port on graphical'
-        print self.port  
+        self.sensors, self.port = self.getvalues() 
         self.modegraphicalpanel.setPort(self.port)
         self.modegraphicalpanel.setSensors(self.sensors)
         self.modegraphicalpanel.setEcoMode(self.ecomode)
@@ -718,9 +718,7 @@ class PFCFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.modenumericalpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
-        self.sensors, self.port = self.getvalues()
-        print 'port on numerical'
-        print self.port  
+        self.sensors, self.port = self.getvalues()  
         self.modenumericalpanel.setPort(self.port)
         self.modenumericalpanel.setSensors(self.sensors)
         self.modenumericalpanel.setEcoMode(self.ecomode)
@@ -738,8 +736,7 @@ class PFCFrame(wx.Frame):
         self.sizer.Add(self.modelistpanel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
         self.sensors, self.port = self.getvalues()
-        print 'port on list'
-        print self.port  
+        self.modelistpanel.setRecordFile(self.record_file) 
         self.modelistpanel.setPort(self.port)
         self.modelistpanel.setEcoMode(self.ecomode)
         self.modelistpanel.showModeListPanel()

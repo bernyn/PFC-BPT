@@ -24,7 +24,7 @@ class SettingSerialPanel( wx.Panel ):
         #init
         self.cfg = wx.Config('serialsettings')
         if self.cfg.Exists('portnames'): #port baudrate databits parity stop bits
-            portnames, baudrate, databits = self.cfg.ReadInt('port'), self.cfg.ReadInt('baudrate'), self.cfg.ReadInt('databits')
+            portnames, baudrate, databits = self.cfg.Read('portnames'), self.cfg.ReadInt('baudrate'), self.cfg.ReadInt('databits')
             parity, stopbits = self.cfg.ReadInt('parity'), self.cfg.ReadInt('stopbits')
  
         else:
@@ -160,7 +160,7 @@ class SettingSerialPanel( wx.Panel ):
         parityconf= self.parityConf.GetSelection()     
         stopbitsconf= self.stopBitsConf.GetSelection()
 
-        self.cfg.WriteInt("portnames", portconf)
+        self.cfg.Write()("portnames", portconf)
         self.cfg.WriteInt("baudrate", baudconf)
         self.cfg.WriteInt("databits", databitsconf)
         self.cfg.WriteInt("parity", parityconf)
